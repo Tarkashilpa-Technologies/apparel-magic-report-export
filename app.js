@@ -4,8 +4,9 @@ const app = express();
 const port = pjson.env.port;
 
 const ftp = require("basic-ftp");
+// base URL
 app.get("/", (req, res) => {
-  res.send("Uploading start");
+  res.send("Refresh to start uploading");
   uploadFileToFTP("addresses.csv", "input/addresses.csv");
 });
 
@@ -17,6 +18,7 @@ async function uploadFileToFTP(localFile, remotePath) {
   const client = new ftp.Client();
 
   try {
+    //Configuration from Package JSON
     await client.access({
       host: pjson.env.host,
       user: pjson.env.user,
@@ -24,7 +26,7 @@ async function uploadFileToFTP(localFile, remotePath) {
       secure: pjson.env.secure,
     });
 
-    // upload the local file located in localFile
+    // upload the local file located in localFile relative path from server loction
     // to remotePath
     await client.uploadFrom(localFile, remotePath);
   } catch (err) {
