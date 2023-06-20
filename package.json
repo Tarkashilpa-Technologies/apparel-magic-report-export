@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
   },
   "repository": {
     "type": "git",
@@ -17,9 +18,14 @@
   },
   "homepage": "https://github.com/Tarkashilpa-Technologies/apparel-magic-report-export#readme",
   "dependencies": {
+    "axios": "^1.4.0",
     "basic-ftp": "^5.0.3",
     "body-parser": "^1.20.2",
     "express": "^4.18.2",
+    "flat": "^5.0.2",
+    "fs": "0.0.1-security",
+    "json2csv": "^6.0.0-alpha.2",
+    "node-cron": "^3.0.2",
     "nodemon": "^2.0.22",
     "ssh2-sftp-client": "^9.1.0"
   },
@@ -29,6 +35,8 @@
     "host": "ftp.dlptest.com",
     "user": "dlpuser",
     "password": "rNrKYTX9g7z3RgJRmxWuGHbeu",
-    "secure": false
+    "secure": false,
+    "baseUrl": "https://lcr-black-edition.app.apparelmagic.com/api/json",
+    "token": "4bd4c51e72757fa3dc41f72b1eb7487f"
   }
 }
