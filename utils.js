@@ -2,7 +2,6 @@ const json2csv = require("json2csv").parse;
 const fs = require("fs");
 const cron = require("node-cron");
 const pjson = require("./package.json");
-let headerForCSV = ["Item_OrderQty", "Item_Price", "ShipTo_Email"];
 module.exports = {
   convertToCsv: async (jsonData) => {
     const csvData = json2csv(jsonData);
@@ -44,6 +43,10 @@ module.exports = {
     var processedData = new Array();
     for (record of unprocessedData) {
       processedData.push({
+        MessageSendingDate: "",
+        AIMS360ClientCode: "CHLOE",
+        AIMS360ClientName: "Chloe J llc - DBA Jocelyn",
+        AIMS360CustOrderNum: record.order_id,
         Item_OrderQty: record.qty,
         Item_Price: record.pick_ticket_items[0].unit_price,
         ShipTo_Email: record.customerData.email,
