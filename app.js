@@ -2,12 +2,15 @@ const express = require("express");
 const pjson = require("./package.json");
 const app = express();
 const port = pjson.env.port;
-const ftp = require("basic-ftp");
-const { convertToCsv, cronJobFirst, apiStringWithEventTime } = require("./utils");
-const csvData = require("./customerData.json");
+const {
+  convertToCsv,
+  cronJobFirst,
+  apiStringWithEventTime,
+} = require("./utils");
+// const csvData = require("./customerData.json");
 const { fetchRecords } = require("./controllers/functions");
-const flatten = require('flat');
-
+const { fetchCustomerRecords } = require("./controllers/functions");
+const flatten = require("flat");
 
 // base URL
 app.get("/", (req, res) => {
@@ -18,44 +21,37 @@ app.get("/", (req, res) => {
 //Temp Function for now
 app.get("/createRecords", async (req, res) => {
   //API calls to be made here
-  let unprocessedData= await fetchRecords()
-
+  let unprocessedData = await fetchRecords(
+    req.query.pageSize,
+    req.query.currentPage
+  );
+  for (pickTicket of unprocessedData?.response) {
+    console.log("pickTicket.customer_id", pickTicket.customer_id);
+    await fetchCustomerRecords(pickTicket.customer_id)
+      .then((customerResponse) => {
+        pickTicket.customerData = customerResponse;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+  console.log("data fetch complete");
   //Processing of the data
-  let processedData = Object.values(unprocessedData).map(obj => flatten(obj));
+  let processedData = Object.values(unprocessedData).map((obj) => flatten(obj));
 
   //CSV creation
   let csvData = convertToCsv(processedData);
   console.log("CSV", csvData);
 
   //FTP can be done here
+  // TODO: update response
+  res.send(unprocessedData);
 });
 
 //Cron Jobs initialization
-cronJobFirst.start();
+// cronJobFirst.start();
 // cronJobSecond.start(); //Second Cron Job if needed
-
 
 app.listen(port, () => {
   console.log(`apparel-magic-report-export app listening on port ${port}`);
 });
-
-async function uploadFileToFTP(localFile, remotePath) {
-  const client = new ftp.Client();
-
-  try {
-    //Configuration from Package JSON
-    await client.access({
-      host: pjson.env.host,
-      user: pjson.env.user,
-      password: pjson.env.password,
-      secure: pjson.env.secure,
-    });
-
-    // upload the local file located in localFile relative path from server loction
-    // to remotePath
-    await client.uploadFrom(localFile, remotePath);
-  } catch (err) {
-    console.log(err);
-  }
-  client.close();
-}
