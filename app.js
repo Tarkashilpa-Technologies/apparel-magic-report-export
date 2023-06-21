@@ -6,10 +6,13 @@ const {
   convertToCsv,
   cronJobFirst,
   apiStringWithEventTime,
+  filterDataForCSV,
 } = require("./utils");
 // const csvData = require("./customerData.json");
-const { fetchRecords } = require("./controllers/functions");
-const { fetchCustomerRecords } = require("./controllers/functions");
+const {
+  fetchRecords,
+  fetchCustomerRecords,
+} = require("./controllers/functions");
 const flatten = require("flat");
 
 // base URL
@@ -37,7 +40,9 @@ app.get("/createRecords", async (req, res) => {
   }
   console.log("data fetch complete");
   //Processing of the data
-  let processedData = Object.values(unprocessedData).map((obj) => flatten(obj));
+  let processedData = Object.values(
+    filterDataForCSV(unprocessedData?.response)
+  ).map((obj) => flatten(obj));
 
   //CSV creation
   let csvData = convertToCsv(processedData);
@@ -45,7 +50,7 @@ app.get("/createRecords", async (req, res) => {
 
   //FTP can be done here
   // TODO: update response
-  res.send(unprocessedData);
+  res.send(processedData);
 });
 
 //Cron Jobs initialization

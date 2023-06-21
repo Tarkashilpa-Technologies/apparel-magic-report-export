@@ -2,7 +2,7 @@ const json2csv = require("json2csv").parse;
 const fs = require("fs");
 const cron = require("node-cron");
 const pjson = require("./package.json");
-
+let headerForCSV = ["Item_OrderQty", "Item_Price", "ShipTo_Email"];
 module.exports = {
   convertToCsv: async (jsonData) => {
     const csvData = json2csv(jsonData);
@@ -40,4 +40,15 @@ module.exports = {
         console.log(err);
       });
   }),
+  filterDataForCSV: (unprocessedData) => {
+    var processedData = new Array();
+    for (record of unprocessedData) {
+      processedData.push({
+        Item_OrderQty: record.qty,
+        Item_Price: record.pick_ticket_items[0].unit_price,
+        ShipTo_Email: record.customerData.email,
+      });
+    }
+    return processedData;
+  },
 };
