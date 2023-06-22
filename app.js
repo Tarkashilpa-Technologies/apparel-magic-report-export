@@ -45,8 +45,8 @@ app.get("/createRecords", async (req, res) => {
   ).map((obj) => flatten(obj));
 
   //CSV creation
-  let csvData = convertToCsv(processedData);
-  console.log("CSV", csvData);
+  convertToCsv(processedData);
+  // console.log("CSV", csvData);
 
   //FTP can be done here
   // TODO: update response
