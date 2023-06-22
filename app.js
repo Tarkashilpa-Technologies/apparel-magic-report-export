@@ -16,18 +16,43 @@ const {
 const flatten = require("flat");
 
 // base URL
-app.get("/", (req, res) => {
-  res.send("Refresh to start uploading");
-  uploadFileToFTP("addresses.csv", "input/addresses.csv");
-});
+// app.get("/", (req, res) => {
+//   res.send("Refresh to start uploading");
+//   uploadFileToFTP("addresses.csv", "input/addresses.csv");
+// });
 
 //Temp Function for now
 app.get("/createRecords", async (req, res) => {
-  //API calls to be made here
-  let unprocessedData = await fetchRecords(
+  let processedData = await createRecords(
     req.query.pageSize,
     req.query.currentPage
   );
+  res.send(processedData);
+});
+async function createRecords(pageSize, currentPage) {
+  // let pageSize = req.query.pageSize;
+  let firstPage = await createBatchRecords(pageSize, currentPage);
+  let paginationData = firstPage?.meta?.pagination;
+  if (paginationData?.total_pages != parseInt(paginationData?.current_page)) {
+    for (
+      let i = parseInt(paginationData?.current_page) + 1;
+      i <= paginationData?.total_pages;
+      i++
+    ) {
+      await createBatchRecords(pageSize, i);
+    }
+  }
+  return paginationData;
+}
+async function createBatchRecords(pageSize, currentPage) {
+  console.log(
+    "processing for: pageSize: ",
+    pageSize,
+    " currentPage: ",
+    currentPage
+  );
+  let unprocessedData = await fetchRecords(pageSize, currentPage);
+
   for (pickTicket of unprocessedData?.response) {
     console.log("pickTicket.customer_id", pickTicket.customer_id);
     await fetchCustomerRecords(pickTicket.customer_id)
@@ -46,13 +71,8 @@ app.get("/createRecords", async (req, res) => {
 
   //CSV creation
   convertToCsv(processedData);
-  // console.log("CSV", csvData);
-
-  //FTP can be done here
-  // TODO: update response
-  res.send(processedData);
-});
-
+  return unprocessedData;
+}
 //Cron Jobs initialization
 // cronJobFirst.start();
 // cronJobSecond.start(); //Second Cron Job if needed
