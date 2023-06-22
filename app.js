@@ -45,14 +45,12 @@ async function createRecords(pageSize, currentPage) {
   return paginationData;
 }
 async function createBatchRecords(pageSize, currentPage) {
-  console.log(
-    "processing for: pageSize: ",
-    pageSize,
-    " currentPage: ",
-    currentPage
-  );
-  let unprocessedData = await fetchRecords(pageSize, currentPage);
+  console.log("******** fetching details for ********");
+  console.log("pageSize: ", pageSize);
+  console.log("currentPage: ", currentPage);
 
+  let unprocessedData = await fetchRecords(pageSize, currentPage);
+  console.log("total pages: ", unprocessedData?.meta?.pagination?.total_pages);
   for (pickTicket of unprocessedData?.response) {
     console.log("pickTicket.customer_id", pickTicket.customer_id);
     await fetchCustomerRecords(pickTicket.customer_id)
