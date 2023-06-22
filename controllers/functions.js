@@ -1,5 +1,6 @@
 const { apiStringWithEventTime } = require("../utils");
 const axios = require("axios");
+const pjson = require("../package.json");
 // const ftp = require("basic-ftp");
 module.exports = {
   fetchCustomerRecords: async (customerId) => {
@@ -15,7 +16,10 @@ module.exports = {
       );
     });
   },
-  fetchRecords: async (pageSize = 100, currentPage = 1) => {
+  fetchRecords: async (
+    pageSize = pjson.env.pageSize,
+    currentPage = pjson.env.currentPage
+  ) => {
     return new Promise((resolve) => {
       let apiString = apiStringWithEventTime(
         "pick_tickets/",
