@@ -39,8 +39,8 @@
     "secure": false,
     "baseUrl": "https://lcr-black-edition.app.apparelmagic.com/api/json",
     "token": "4bd4c51e72757fa3dc41f72b1eb7487f",
-    "pageSize": 100,
-    "currentPage": 120,
-    "mongooseUrl": "mongodb+srv://navaltk:Fzbpv2A3UFAM19Kt@cluster0.dokdtz4.mongodb.net/?retryWrites=true&w=majority"
+    "pageSize": 10,
+    "currentPage": 1235,
+    "mongooseUrl": "mongodb://0.0.0.0:27017/?retryWrites=true&w=majority"
   }
 }
