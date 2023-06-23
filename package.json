@@ -41,6 +41,7 @@
     "token": "4bd4c51e72757fa3dc41f72b1eb7487f",
     "pageSize": 10,
     "currentPage": 1235,
-    "mongooseUrl": "mongodb://0.0.0.0:27017/?retryWrites=true&w=majority"
+    "mongooseUrlLocal": "mongodb://0.0.0.0:27017/?retryWrites=true&w=majority",
+    "mongooseUrl": "mongodb+srv://navaltk:Fzbpv2A3UFAM19Kt@cluster0.dokdtz4.mongodb.net/?retryWrites=true&w=majority"
   }
 }

@@ -17,6 +17,7 @@ const flatten = require("flat");
 const mongoose = require("mongoose");
 const Database = require("./Database");
 const dbUrl = pjson.env.mongooseUrl;
+// const dbUrl = pjson.env.mongooseUrlLocal;
 
 // base URL
 // app.get("/", (req, res) => {
