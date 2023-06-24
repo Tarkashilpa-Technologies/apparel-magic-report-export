@@ -15,6 +15,7 @@ const dbUrl = pjson.env.mongooseUrl;
 const fetchCustomerRecords = async (customerId) => {
   return new Promise((resolve) => {
     let apiString = apiStringWithEventTime("customers/" + customerId);
+    // console.log("service call: ", apiString);
     axios.get(apiString).then(
       (response) => {
         resolve(response?.data?.response[0]);
@@ -27,17 +28,23 @@ const fetchCustomerRecords = async (customerId) => {
 };
 const fetchRecords = async (
   pageSize = pjson.env.pageSize,
-  currentPage = pjson.env.currentPage
+  currentPage = pjson.env.currentPage,
+  lastPickTicketId
 ) => {
   return new Promise((resolve) => {
+    console.log("fetchRecords lastPickTicketId", lastPickTicketId);
+    let startPickTicketId = parseInt(lastPickTicketId) + 1;
     let apiString = apiStringWithEventTime(
       "pick_tickets/",
       "&pagination[page_number]=" +
         currentPage +
         "&pagination[page_size]=" +
         pageSize +
-        "&parameters[0][field]=void&parameters[0][operator]==&parameters[0][value]=Not"
+        "&parameters[0][field]=void&parameters[0][operator]==&parameters[0][value]=Not" +
+        "&parameters[1][field]=pick_ticket_id&parameters[1][operator]=>&parameters[1][value]=" +
+        startPickTicketId
     );
+    // console.log("service call: ", apiString);
     axios.get(apiString).then(
       (response) => {
         resolve(response?.data);
@@ -50,21 +57,29 @@ const fetchRecords = async (
 };
 const createRecords = async (pageSize, currentPage) => {
   let lastProcessData = await Database.LastFetchedMetaData.find();
-  let [recordId, lastFetchedPickTicketIndex] = ["", ""];
+  let [
+    recordId,
+    lastFetchedPickTicketIndex,
+    lastPickTicketId,
+    lastProcessedPickTicket,
+  ] = ["", "", "0", ""];
 
   if (lastProcessData.length > 0) {
     console.log("data fetched from DB");
-    pageSize = lastProcessData[0]?.pageSize;
-    currentPage = lastProcessData[0]?.lastFetchedPagination;
+    // pageSize = lastProcessData[0]?.pageSize;
+    // currentPage = lastProcessData[0]?.lastFetchedPagination;
     recordId = lastProcessData[0]?._id;
-    lastFetchedPickTicketIndex = lastProcessData[0]?.lastFetchedPickTicketIndex;
+    // lastFetchedPickTicketIndex = lastProcessData[0]?.lastFetchedPickTicketIndex;
+    lastPickTicketId = lastProcessData[0]?.lastFetchedPickTicketId;
   }
   let firstPage = await createBatchRecords(
     pageSize,
-    currentPage,
-    lastFetchedPickTicketIndex
+    "1",
+    // lastFetchedPickTicketIndex,
+    lastPickTicketId
   );
   let paginationData = firstPage?.meta?.pagination;
+  lastProcessedPickTicket = firstPage?.endPickId;
   let [last_id, last_page] = [
     paginationData?.number_records_returned,
     paginationData?.current_page,
@@ -75,10 +90,11 @@ const createRecords = async (pageSize, currentPage) => {
       i <= paginationData?.total_pages;
       i++
     ) {
-      let tempRecords = await createBatchRecords(pageSize, i);
+      console.log("lastProcessedPickTicket", lastProcessedPickTicket);
+      let tempRecords = await createBatchRecords(pageSize, i, lastPickTicketId);
       last_id = tempRecords?.meta?.pagination?.number_records_returned;
       last_page = tempRecords?.meta?.pagination?.current_page;
-      // page_Size = pageSize;
+      lastProcessedPickTicket = tempRecords?.endPickId;
     }
   }
   if (recordId) {
@@ -86,27 +102,28 @@ const createRecords = async (pageSize, currentPage) => {
       pageSize: pageSize,
       lastFetchedPagination: last_page,
       lastFetchedPickTicketIndex: last_id,
-      //TODO: updat to fetch few records
+      lastFetchedPickTicketId: "14023", //lastProcessedPickTicket,
     });
   } else {
     await Database.LastFetchedMetaData.create({
       pageSize: pageSize,
       lastFetchedPagination: last_page,
       lastFetchedPickTicketIndex: last_id,
+      lastFetchedPickTicketId: lastProcessedPickTicket,
     });
   }
   return paginationData;
 };
-const createBatchRecords = async (
-  pageSize,
-  currentPage,
-  lastFetchedPickTicketIndex
-) => {
+const createBatchRecords = async (pageSize, currentPage, lastPickTicketId) => {
   console.log("******** fetching details for ********");
   console.log("pageSize: ", pageSize);
   console.log("currentPage: ", currentPage);
-
-  let unprocessedData = await fetchRecords(pageSize, currentPage);
+  console.log("lastPickTicketId: ", lastPickTicketId);
+  let unprocessedData = await fetchRecords(
+    pageSize,
+    currentPage,
+    lastPickTicketId
+  );
   let [filePrefix, endPickId] = [
     unprocessedData?.response[0]?.pick_ticket_id,
     "",
@@ -114,23 +131,19 @@ const createBatchRecords = async (
 
   console.log("total pages: ", unprocessedData?.meta?.pagination?.total_pages);
   for (let [index, pickTicket] of unprocessedData?.response?.entries()) {
-    if (index < lastFetchedPickTicketIndex) {
-      pickTicket.alreadyProcessed = true;
-    } else {
-      console.log("pickTicket.customer_id", pickTicket.customer_id);
-      // Get Customer data
-      await fetchCustomerRecords(pickTicket.customer_id)
-        .then((customerResponse) => {
-          pickTicket.customerData = customerResponse;
-          pickTicket.alreadyProcessed = false;
-          endPickId = pickTicket.pick_ticket_id;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      //Get warehouse data from DB
-      await getWareHouseData(pickTicket);
-    }
+    console.log("pickTicket.customer_id", pickTicket.customer_id);
+    // Get Customer data
+    await fetchCustomerRecords(pickTicket.customer_id)
+      .then((customerResponse) => {
+        pickTicket.customerData = customerResponse;
+        pickTicket.alreadyProcessed = false;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    endPickId = pickTicket.pick_ticket_id;
+    //Get warehouse data from DB
+    await getWareHouseData(pickTicket);
   }
   console.log("data fetch complete");
   //Processing of the data
@@ -142,16 +155,46 @@ const createBatchRecords = async (
   if (processedData.length != 0) {
     convertToCsv(processedData, `${filePrefix}_${endPickId}`);
   }
+  unprocessedData.endPickId = endPickId;
   return unprocessedData;
 };
 const getWareHouseData = async (pickTicketData) => {
+  let pickTicketItemData = {};
   for (item of pickTicketData?.pick_ticket_items) {
     console.log("upc code from pick ticket", item?.upc);
-    let upcData = await Database.WareHouseItem.find({
+    let upcDataDB = await Database.WareHouseItem.find({
       UPC: item?.upc,
     });
-    console.log("upcData from DB", JSON.stringify(upcData));
+    if (upcDataDB.length > 0) {
+      item.upcData = upcDataDB[0];
+      let processUpcKey = `${upcDataDB[0]?.Style}_${upcDataDB[0]?.Color}`;
+      let quantity = item.qty;
+      if (pickTicketItemData.hasOwnProperty(processUpcKey)) {
+        if (
+          pickTicketItemData?.[processUpcKey].hasOwnProperty(upcDataDB[0]?.Size)
+        ) {
+          quantity =
+            parseFloat(quantity) +
+            parseFloat(pickTicketItemData?.[processUpcKey][upcDataDB[0]?.Size]);
+        }
+      } else {
+        pickTicketItemData[processUpcKey] = {};
+        let upcPackDataDB = await Database.WareHouseItem.find({
+          Style: upcDataDB[0]?.Style,
+          Color: upcDataDB[0]?.Color,
+          Size: "PPK",
+        });
+        if (upcPackDataDB.length > 0) {
+          pickTicketItemData[processUpcKey].packDetails = upcPackDataDB;
+        }
+      }
+      pickTicketItemData[processUpcKey][upcDataDB[0]?.Size] =
+        quantity.toString();
+      console.log("upcData from DB", JSON.stringify(upcDataDB));
+    }
   }
+  console.log("pickTicketItemData", JSON.stringify(pickTicketItemData));
+  pickTicketData.pickTicketItemData = pickTicketItemData;
 };
 const initDatabase = () => {
   mongoose
