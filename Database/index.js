@@ -1,3 +1,4 @@
 module.exports = {
-    LastFetchedMetaData : require('./LastFetchedMetaData')
-}
+  LastFetchedMetaData: require("./LastFetchedMetaData"),
+  WareHouseItem: require("./WareHouseItem"),
+};

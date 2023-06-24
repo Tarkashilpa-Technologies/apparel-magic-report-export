@@ -86,6 +86,7 @@ const createRecords = async (pageSize, currentPage) => {
       pageSize: pageSize,
       lastFetchedPagination: last_page,
       lastFetchedPickTicketIndex: last_id,
+      //TODO: updat to fetch few records
     });
   } else {
     await Database.LastFetchedMetaData.create({
@@ -117,6 +118,7 @@ const createBatchRecords = async (
       pickTicket.alreadyProcessed = true;
     } else {
       console.log("pickTicket.customer_id", pickTicket.customer_id);
+      // Get Customer data
       await fetchCustomerRecords(pickTicket.customer_id)
         .then((customerResponse) => {
           pickTicket.customerData = customerResponse;
@@ -126,6 +128,8 @@ const createBatchRecords = async (
         .catch((err) => {
           console.log(err);
         });
+      //Get warehouse data from DB
+      await getWareHouseData(pickTicket);
     }
   }
   console.log("data fetch complete");
@@ -139,6 +143,15 @@ const createBatchRecords = async (
     convertToCsv(processedData, `${filePrefix}_${endPickId}`);
   }
   return unprocessedData;
+};
+const getWareHouseData = async (pickTicketData) => {
+  for (item of pickTicketData?.pick_ticket_items) {
+    console.log("upc code from pick ticket", item?.upc);
+    let upcData = await Database.WareHouseItem.find({
+      UPC: item?.upc,
+    });
+    console.log("upcData from DB", JSON.stringify(upcData));
+  }
 };
 const initDatabase = () => {
   mongoose
@@ -155,4 +168,4 @@ const cronJob = cron.schedule(pjson.env.cronSchedule, () => {
   let processedData = createRecords(pageSize, currentPage);
   // console.log("Cron end with", processedData);
 });
-module.exports = { initDatabase, createRecords, cronJob };
+module.exports = { initDatabase, createRecords };
