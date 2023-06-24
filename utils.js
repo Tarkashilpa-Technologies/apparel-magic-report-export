@@ -1,6 +1,6 @@
 const json2csv = require("json2csv").parse;
 const fs = require("fs");
-const cron = require("node-cron");
+
 const pjson = require("./package.json");
 module.exports = {
   convertToCsv: async (jsonData) => {
@@ -39,29 +39,39 @@ module.exports = {
   //     resolve(data);
   //   });
   // },
+  //   uploadFileToFTP: async (localFile, remotePath) => {
+  //     const client = new ftp.Client();
+  //     try {
+  //       //Configuration from Package JSON
+  //       await client.access({
+  //         host: pjson.env.host,
+  //         user: pjson.env.user,
+  //         password: pjson.env.password,
+  //         secure: pjson.env.secure,
+  //       });
+
+  //       // upload the local file located in localFile relative path from server loction
+  //       // to remotePath
+  //       await client.uploadFrom(localFile, remotePath);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //     client.close();
+  //   },
   apiStringWithEventTime: (endpoint, queryParam = "") => {
     return `${pjson.env.baseUrl}/${endpoint}?time=${Date.now()}&token=${
       pjson.env.token
     }${queryParam}`;
   },
-  cronJobFirst: cron.schedule("0 13 * * *", () => {
-    convertToCsv(data)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }),
-  cronJobSecond: cron.schedule("0 20 * * *", () => {
-    convertToCsv(data)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }),
+  // cronJobSecond: cron.schedule("0 20 * * *", () => {
+  //   convertToCsv(data)
+  //     .then((res) => {
+  //       console.log(res);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // }),
   filterDataForCSV: (unprocessedData) => {
     var processedData = new Array();
     for (record of unprocessedData) {
