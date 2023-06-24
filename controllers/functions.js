@@ -9,8 +9,7 @@ const flatten = require("flat");
 const mongoose = require("mongoose");
 const Database = require("../Database");
 const cron = require("node-cron");
-// const dbUrl = pjson.env.mongooseUrl;
-const dbUrl = pjson.env.mongooseUrlLocal;
+const dbUrl = pjson.env.mongooseUrl;
 
 // module.exports = {
 const fetchCustomerRecords = async (customerId) => {
@@ -140,6 +139,7 @@ const initDatabase = () => {
     .connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
       console.log(`connected with DB`);
+      cronJob.start();
     })
     .catch((err) => console.log(err));
 };

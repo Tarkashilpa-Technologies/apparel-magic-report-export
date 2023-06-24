@@ -11,10 +11,9 @@ const { initDatabase, cronJob } = require("./controllers/functions");
 // });
 
 //Temp Function for now
-app.get("/createRecords", async (req, res) => {
-  cronJob.start();
-  res.send("createRecords compete");
-});
+// app.get("/createRecords", async (req, res) => {
+//   res.send("createRecords compete");
+// });
 
 app.listen(port, () => {
   console.log(`apparel-magic-report-export app listening on port ${port}`);
