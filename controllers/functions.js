@@ -106,6 +106,11 @@ const createBatchRecords = async (
   console.log("currentPage: ", currentPage);
 
   let unprocessedData = await fetchRecords(pageSize, currentPage);
+  let [filePrefix, endPickId] = [
+    unprocessedData?.response[0]?.pick_ticket_id,
+    "",
+  ];
+
   console.log("total pages: ", unprocessedData?.meta?.pagination?.total_pages);
   for (let [index, pickTicket] of unprocessedData?.response?.entries()) {
     if (index < lastFetchedPickTicketIndex) {
@@ -116,6 +121,7 @@ const createBatchRecords = async (
         .then((customerResponse) => {
           pickTicket.customerData = customerResponse;
           pickTicket.alreadyProcessed = false;
+          endPickId = pickTicket.pick_ticket_id;
         })
         .catch((err) => {
           console.log(err);
@@ -130,7 +136,7 @@ const createBatchRecords = async (
   // console.log("processedData", processedData);
   //CSV creation
   if (processedData.length != 0) {
-    convertToCsv(processedData);
+    convertToCsv(processedData, `${filePrefix}_${endPickId}`);
   }
   return unprocessedData;
 };

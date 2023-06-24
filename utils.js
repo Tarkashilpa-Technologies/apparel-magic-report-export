@@ -2,11 +2,11 @@ const json2csv = require("json2csv").parse;
 const fs = require("fs");
 const pjson = require("./package.json");
 module.exports = {
-  convertToCsv: async (jsonData) => {
+  convertToCsv: async (jsonData, filePrefix) => {
     const csvData = json2csv(jsonData);
     return new Promise((resolve, reject) => {
       fs.writeFile(
-        `${pjson.env.csvLocation}/csv_files/${Date.now()}.csv`,
+        `${pjson.env.csvLocation}/csv_files/${filePrefix}_${Date.now()}.csv`,
         csvData,
         "utf8",
         (err) => {
