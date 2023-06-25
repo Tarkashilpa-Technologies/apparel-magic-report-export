@@ -1,8 +1,4 @@
-const {
-  apiStringWithEventTime,
-  filterDataForCSV,
-  convertToCsv,
-} = require("../utils");
+const { apiStringWithEventTime, filterDataForCSV, convertToCsv } = require("../utils");
 const axios = require("axios");
 const pjson = require("../package.json");
 const flatten = require("flat");
@@ -26,11 +22,7 @@ const fetchCustomerRecords = async (customerId) => {
     );
   });
 };
-const fetchRecords = async (
-  pageSize = pjson.env.pageSize,
-  currentPage = pjson.env.currentPage,
-  lastPickTicketId
-) => {
+const fetchRecords = async (pageSize = pjson.env.pageSize, currentPage = pjson.env.currentPage, lastPickTicketId) => {
   return new Promise((resolve) => {
     console.log("fetchRecords lastPickTicketId", lastPickTicketId);
     let startPickTicketId = parseInt(lastPickTicketId) + 1;
@@ -57,12 +49,7 @@ const fetchRecords = async (
 };
 const createRecords = async (pageSize, currentPage) => {
   let lastProcessData = await Database.LastFetchedMetaData.find();
-  let [
-    recordId,
-    lastFetchedPickTicketIndex,
-    lastPickTicketId,
-    lastProcessedPickTicket,
-  ] = ["", "", "0", ""];
+  let [recordId, lastFetchedPickTicketIndex, lastPickTicketId, lastProcessedPickTicket] = ["", "", "0", ""];
 
   if (lastProcessData.length > 0) {
     console.log("data fetched from DB");
@@ -80,16 +67,9 @@ const createRecords = async (pageSize, currentPage) => {
   );
   let paginationData = firstPage?.meta?.pagination;
   lastProcessedPickTicket = firstPage?.endPickId;
-  let [last_id, last_page] = [
-    paginationData?.number_records_returned,
-    paginationData?.current_page,
-  ];
+  let [last_id, last_page] = [paginationData?.number_records_returned, paginationData?.current_page];
   if (paginationData?.total_pages != parseInt(paginationData?.current_page)) {
-    for (
-      let i = parseInt(paginationData?.current_page) + 1;
-      i <= paginationData?.total_pages;
-      i++
-    ) {
+    for (let i = parseInt(paginationData?.current_page) + 1; i <= paginationData?.total_pages; i++) {
       console.log("lastProcessedPickTicket", lastProcessedPickTicket);
       let tempRecords = await createBatchRecords(pageSize, i, lastPickTicketId);
       last_id = tempRecords?.meta?.pagination?.number_records_returned;
@@ -119,15 +99,8 @@ const createBatchRecords = async (pageSize, currentPage, lastPickTicketId) => {
   console.log("pageSize: ", pageSize);
   console.log("currentPage: ", currentPage);
   console.log("lastPickTicketId: ", lastPickTicketId);
-  let unprocessedData = await fetchRecords(
-    pageSize,
-    currentPage,
-    lastPickTicketId
-  );
-  let [filePrefix, endPickId] = [
-    unprocessedData?.response[0]?.pick_ticket_id,
-    "",
-  ];
+  let unprocessedData = await fetchRecords(pageSize, currentPage, lastPickTicketId);
+  let [filePrefix, endPickId] = [unprocessedData?.response[0]?.pick_ticket_id, ""];
 
   console.log("total pages: ", unprocessedData?.meta?.pagination?.total_pages);
   for (let [index, pickTicket] of unprocessedData?.response?.entries()) {
@@ -147,9 +120,7 @@ const createBatchRecords = async (pageSize, currentPage, lastPickTicketId) => {
   }
   console.log("data fetch complete");
   //Processing of the data
-  let processedData = Object.values(
-    filterDataForCSV(unprocessedData?.response)
-  ).map((obj) => flatten(obj));
+  let processedData = Object.values(filterDataForCSV(unprocessedData?.response)).map((obj) => flatten(obj));
   // console.log("processedData", processedData);
   //CSV creation
   if (processedData.length != 0) {
@@ -170,31 +141,60 @@ const getWareHouseData = async (pickTicketData) => {
       let processUpcKey = `${upcDataDB[0]?.Style}_${upcDataDB[0]?.Color}`;
       let quantity = item.qty;
       if (pickTicketItemData.hasOwnProperty(processUpcKey)) {
-        if (
-          pickTicketItemData?.[processUpcKey].hasOwnProperty(upcDataDB[0]?.Size)
-        ) {
-          quantity =
-            parseFloat(quantity) +
-            parseFloat(pickTicketItemData?.[processUpcKey][upcDataDB[0]?.Size]);
+        if (pickTicketItemData?.[processUpcKey].hasOwnProperty(upcDataDB[0]?.Size)) {
+          quantity = parseFloat(quantity) + parseFloat(pickTicketItemData?.[processUpcKey][upcDataDB[0]?.Size].totalQuantity);
+        } else {
+          // UPC detais for Style, color and size
+          pickTicketItemData[processUpcKey][upcDataDB[0]?.Size] = JSON.parse(JSON.stringify(upcDataDB[0]));
         }
       } else {
         pickTicketItemData[processUpcKey] = {};
+        // pack details for Style and color
         let upcPackDataDB = await Database.WareHouseItem.find({
           Style: upcDataDB[0]?.Style,
           Color: upcDataDB[0]?.Color,
           Size: "PPK",
         });
         if (upcPackDataDB.length > 0) {
-          pickTicketItemData[processUpcKey].packDetails = upcPackDataDB;
+          pickTicketItemData[processUpcKey].packDetails = JSON.parse(JSON.stringify(upcPackDataDB[0]));
         }
+        // UPC detais for Style, color and size
+        pickTicketItemData[processUpcKey][upcDataDB[0]?.Size] = JSON.parse(JSON.stringify(upcDataDB[0]));
       }
-      pickTicketItemData[processUpcKey][upcDataDB[0]?.Size] =
-        quantity.toString();
-      console.log("upcData from DB", JSON.stringify(upcDataDB));
+      pickTicketItemData[processUpcKey][upcDataDB[0]?.Size]["totalQuantity"] = quantity.toString();
+      pickTicketItemData[processUpcKey][upcDataDB[0]?.Size]["orderQuantity"] = quantity.toString();
     }
   }
+  // console.log("pickTicketItemData", JSON.stringify(pickTicketItemData));
+  // Optimise Items and store
+  pickTicketData.pickTicketItemData = optimisePickTicketItem(pickTicketItemData);
+};
+const optimisePickTicketItem = (pickTicketItemData) => {
+  for (let [styleColorName, styleColorNameValue] of Object.entries(pickTicketItemData)) {
+    let packRatio = styleColorNameValue?.packDetails?.Ratio.split("-");
+    let packSize = styleColorNameValue?.packDetails?.["Prepack Size Name"].split("-");
+    let eligiableForPack = true;
+    let maxPack;
+    // Check for pack eligiblity and possible packs
+    for (let [index, size] of packSize?.entries()) {
+      if (!(styleColorNameValue.hasOwnProperty(size) || styleColorNameValue[size]["totalQuantity"] < packRatio[index])) {
+        eligiableForPack = false;
+      } else {
+        // Compute Maximum Pack
+        let tempPack = Math.floor(parseFloat(styleColorNameValue[size]["totalQuantity"]) / parseFloat(packRatio[index]));
+        if (index == 0) {
+          maxPack = tempPack;
+        } else {
+          maxPack = tempPack < maxPack ? tempPack : maxPack;
+        }
+      }
+      //TODO: update orderQuantity by pack value
+      styleColorNameValue.eligiableForPack = eligiableForPack;
+      styleColorNameValue.maxPackPossible = maxPack;
+    }
+  }
+
   console.log("pickTicketItemData", JSON.stringify(pickTicketItemData));
-  pickTicketData.pickTicketItemData = pickTicketItemData;
 };
 const initDatabase = () => {
   mongoose
