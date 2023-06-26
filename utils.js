@@ -83,6 +83,7 @@ module.exports = {
           AIMS360CustOrderNum: record?.order_id,
           COD: "No", //TODO: Confirm details
           CompanyDivisionCode: processedPickItemsValue?.CompanyDivisionCode,
+          CompanyDivisionDescription: processedPickItemsValue?.CompanyDivisionDescription,
           CompanyName: "Chloe J LLC DBA Jocelyn",
           CustomerAcctCode: record?.customerData?.customer_id,
           CustomerName: record?.customerData?.customer_name,
