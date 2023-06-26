@@ -82,7 +82,7 @@ const createRecords = async (pageSize, currentPage) => {
       pageSize: pageSize,
       lastFetchedPagination: last_page,
       lastFetchedPickTicketIndex: last_id,
-      lastFetchedPickTicketId: "14023", //lastProcessedPickTicket,
+      lastFetchedPickTicketId: lastProcessedPickTicket,
     });
   } else {
     await Database.LastFetchedMetaData.create({
@@ -170,6 +170,7 @@ const getWareHouseData = async (pickTicketData) => {
   pickTicketData.pickTicketItemData = optimisePickTicketItem(pickTicketItemData);
 };
 const optimisePickTicketItem = (pickTicketItemData) => {
+  let processedPickItems = new Array();
   for (let [styleColorName, styleColorNameValue] of Object.entries(pickTicketItemData)) {
     let packRatio = styleColorNameValue?.packDetails?.Ratio.split("-");
     let packSize = styleColorNameValue?.packDetails?.["Prepack Size Name"].split("-");
@@ -198,8 +199,24 @@ const optimisePickTicketItem = (pickTicketItemData) => {
       styleColorNameValue.eligiableForPack = eligiableForPack;
       styleColorNameValue.maxPackPossible = maxPack;
     }
+    // processed data for reporting
+    for (let [orderType, orderTypeValue] of Object.entries(styleColorNameValue)) {
+      if (parseFloat(orderTypeValue?.orderQuantity) > 0) {
+        console.log("orderType", orderType, parseFloat(orderTypeValue?.orderQuantity));
+        processedPickItems.push({
+          CompanyDivisionCode: orderTypeValue?.Division,
+          CompanyDivisionDescription: orderTypeValue?.Division,
+          Item_OrderQty: orderTypeValue?.orderQuantity,
+          Item_SKU: `${orderTypeValue?.Style}_${orderTypeValue?.Color}_${orderTypeValue?.Size}`,
+          Item_UOM: orderTypeValue?.UOM,
+          Item_UPC: orderTypeValue?.UPC,
+        });
+      }
+    }
   }
+  pickTicketItemData.processedPickItems = processedPickItems;
   console.log("pickTicketItemData", JSON.stringify(pickTicketItemData));
+  return pickTicketItemData;
 };
 const initDatabase = () => {
   mongoose

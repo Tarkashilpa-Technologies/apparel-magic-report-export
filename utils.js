@@ -5,19 +5,14 @@ module.exports = {
   convertToCsv: async (jsonData, filePrefix) => {
     const csvData = json2csv(jsonData);
     return new Promise((resolve, reject) => {
-      fs.writeFile(
-        `${pjson.env.csvLocation}/csv_files/${filePrefix}_${Date.now()}.csv`,
-        csvData,
-        "utf8",
-        (err) => {
-          if (err) {
-            reject({ msg: "error while creating csv file" });
-            // console.log("convertToCsv error".err);
-          } else {
-            resolve({ msg: "file created successfully" });
-          }
+      fs.writeFile(`${pjson.env.csvLocation}/csv_files/${filePrefix}_${Date.now()}.csv`, csvData, "utf8", (err) => {
+        if (err) {
+          reject({ msg: "error while creating csv file" });
+          // console.log("convertToCsv error".err);
+        } else {
+          resolve({ msg: "file created successfully" });
         }
-      );
+      });
     });
   },
   // updateCofiguration: async (jsonData) => {
@@ -63,9 +58,7 @@ module.exports = {
   //     client.close();
   //   },
   apiStringWithEventTime: (endpoint, queryParam = "") => {
-    return `${pjson.env.baseUrl}/${endpoint}?time=${Date.now()}&token=${
-      pjson.env.token
-    }${queryParam}`;
+    return `${pjson.env.baseUrl}/${endpoint}?time=${Date.now()}&token=${pjson.env.token}${queryParam}`;
   },
   // cronJobSecond: cron.schedule("0 20 * * *", () => {
   //   convertToCsv(data)
@@ -78,17 +71,16 @@ module.exports = {
   // }),
   filterDataForCSV: (unprocessedData) => {
     var processedData = new Array();
+    // console.log("unprocessedData", unprocessedData);
     for (record of unprocessedData) {
-      // console.log("record.alreadyProcessed", record.alreadyProcessed);
-      if (!record.alreadyProcessed) {
+      for (processedPickItemsValue of record?.pickTicketItemData?.processedPickItems) {
         processedData.push({
           MessageSendingDate: "",
           AIMS360ClientCode: "CHLOE",
           AIMS360ClientName: "Chloe J llc - DBA Jocelyn",
           AIMS360CustOrderNum: record?.order_id,
           COD: "No", //TODO: Confirm details
-          CompanyDivisionCode: record?.customerData?.division_id,
-          CompanyDivisionDescription: "", // TODO: conversion reqired
+          CompanyDivisionCode: processedPickItemsValue?.CompanyDivisionCode,
           CompanyName: "Chloe J LLC DBA Jocelyn",
           CustomerAcctCode: record?.customerData?.customer_id,
           CustomerName: record?.customerData?.customer_name,
@@ -162,11 +154,11 @@ module.exports = {
           Item_BuyersColorDescrp: "",
           Item_BuyersPartNum: "",
           Item_OrderLineId: "",
-          Item_OrderQty: record?.qty, //TODO: conversion required
+          Item_OrderQty: processedPickItemsValue?.Item_OrderQty,
           Item_Price: record?.unit_price, //TODO: conversion required
-          Item_SKU: record?.sku_id, //TODO: conversion required
-          Item_UOM: record?.qty, //TODO: conversion required
-          Item_UPC: record?.upc_display, //TODO: conversion required
+          Item_SKU: processedPickItemsValue?.Item_SKU,
+          Item_UOM: processedPickItemsValue?.Item_UOM,
+          Item_UPC: processedPickItemsValue?.Item_UPC,
           Item_Notes: "", // No detail available
           Notes: "", // No detail available
         });
