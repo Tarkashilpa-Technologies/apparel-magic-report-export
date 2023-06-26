@@ -188,12 +188,17 @@ const optimisePickTicketItem = (pickTicketItemData) => {
           maxPack = tempPack < maxPack ? tempPack : maxPack;
         }
       }
-      //TODO: update orderQuantity by pack value
+      //update orderQuantity by pack value
+      styleColorNameValue.packDetails.orderQuantity = maxPack;
+      if (eligiableForPack) {
+        for (let [index, size] of packSize?.entries()) {
+          styleColorNameValue[size]["orderQuantity"] = parseFloat(styleColorNameValue[size]["totalQuantity"]) - parseFloat(packRatio[index]) * maxPack;
+        }
+      }
       styleColorNameValue.eligiableForPack = eligiableForPack;
       styleColorNameValue.maxPackPossible = maxPack;
     }
   }
-
   console.log("pickTicketItemData", JSON.stringify(pickTicketItemData));
 };
 const initDatabase = () => {
