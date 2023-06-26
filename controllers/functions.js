@@ -17,14 +17,15 @@ const fetchCustomerRecords = async (customerId) => {
         resolve(response?.data?.response[0]);
       },
       (error) => {
-        console.log(error);
+        console.error("Error for fetchCustomerRecords: ", customerId);
+        console.log("Error details: ", error);
       }
     );
   });
 };
 const fetchRecords = async (pageSize = pjson.env.pageSize, currentPage = pjson.env.currentPage, lastPickTicketId) => {
   return new Promise((resolve) => {
-    console.log("fetchRecords lastPickTicketId", lastPickTicketId);
+    // console.log("fetchRecords lastPickTicketId", lastPickTicketId);
     let startPickTicketId = parseInt(lastPickTicketId) + 1;
     let apiString = apiStringWithEventTime(
       "pick_tickets/",
@@ -42,97 +43,90 @@ const fetchRecords = async (pageSize = pjson.env.pageSize, currentPage = pjson.e
         resolve(response?.data);
       },
       (error) => {
-        console.log(error);
+        console.error("Error for fetchRecords: ", lastPickTicketId, " page: ", currentPage);
+        console.log("Error details: ", error);
       }
     );
   });
 };
-const createRecords = async (pageSize, currentPage) => {
+const createRecords = async (pageSize) => {
   let lastProcessData = await Database.LastFetchedMetaData.find();
-  let [recordId, lastFetchedPickTicketIndex, lastPickTicketId, lastProcessedPickTicket] = ["", "", "0", ""];
-
+  let [recordId, lastPickTicketId, lastProcessedPickTicket] = ["", pjson.env.dayZeroPickTicketId, ""];
+  // Get data for Last fetched data from DB
   if (lastProcessData.length > 0) {
-    console.log("data fetched from DB");
-    // pageSize = lastProcessData[0]?.pageSize;
-    // currentPage = lastProcessData[0]?.lastFetchedPagination;
+    console.log("Pick Ticket configuration fetched from DB");
     recordId = lastProcessData[0]?._id;
-    // lastFetchedPickTicketIndex = lastProcessData[0]?.lastFetchedPickTicketIndex;
     lastPickTicketId = lastProcessData[0]?.lastFetchedPickTicketId;
   }
-  let firstPage = await createBatchRecords(
-    pageSize,
-    "1",
-    // lastFetchedPickTicketIndex,
-    lastPickTicketId
-  );
+  // Page 1 fetch for pick ticket
+  let firstPage = await createBatchRecords(pageSize, "1", lastPickTicketId);
   let paginationData = firstPage?.meta?.pagination;
   lastProcessedPickTicket = firstPage?.endPickId;
-  let [last_id, last_page] = [paginationData?.number_records_returned, paginationData?.current_page];
+  // let [last_id, last_page] = [paginationData?.number_records_returned, paginationData?.current_page];
+  // Page 2 to last page fetch for pick ticket
   if (paginationData?.total_pages != parseInt(paginationData?.current_page)) {
     for (let i = parseInt(paginationData?.current_page) + 1; i <= paginationData?.total_pages; i++) {
-      console.log("lastProcessedPickTicket", lastProcessedPickTicket);
       let tempRecords = await createBatchRecords(pageSize, i, lastPickTicketId);
-      last_id = tempRecords?.meta?.pagination?.number_records_returned;
-      last_page = tempRecords?.meta?.pagination?.current_page;
+      // last_id = tempRecords?.meta?.pagination?.number_records_returned;
+      // last_page = tempRecords?.meta?.pagination?.current_page;
       lastProcessedPickTicket = tempRecords?.endPickId;
     }
   }
+  // Insert or update database
   if (recordId) {
     await Database.LastFetchedMetaData.findByIdAndUpdate(recordId, {
-      pageSize: pageSize,
-      lastFetchedPagination: last_page,
-      lastFetchedPickTicketIndex: last_id,
+      // pageSize: pageSize,
+      // lastFetchedPagination: last_page,
+      // lastFetchedPickTicketIndex: last_id,
       lastFetchedPickTicketId: lastProcessedPickTicket,
     });
   } else {
     await Database.LastFetchedMetaData.create({
-      pageSize: pageSize,
-      lastFetchedPagination: last_page,
-      lastFetchedPickTicketIndex: last_id,
+      // pageSize: pageSize,
+      // lastFetchedPagination: last_page,
+      // lastFetchedPickTicketIndex: last_id,
       lastFetchedPickTicketId: lastProcessedPickTicket,
     });
   }
   return paginationData;
 };
 const createBatchRecords = async (pageSize, currentPage, lastPickTicketId) => {
-  console.log("******** fetching details for ********");
-  console.log("pageSize: ", pageSize);
-  console.log("currentPage: ", currentPage);
-  console.log("lastPickTicketId: ", lastPickTicketId);
+  console.log("fetching details for page: ", currentPage);
   let unprocessedData = await fetchRecords(pageSize, currentPage, lastPickTicketId);
-  let [filePrefix, endPickId] = [unprocessedData?.response[0]?.pick_ticket_id, ""];
-
-  console.log("total pages: ", unprocessedData?.meta?.pagination?.total_pages);
+  let [filePrefix, endPickId] = [unprocessedData?.response[0]?.pick_ticket_id, lastPickTicketId];
+  console.log("Fetching data from Pick Ticket: ", lastPickTicketId);
   for (let [index, pickTicket] of unprocessedData?.response?.entries()) {
-    console.log("pickTicket.customer_id", pickTicket.customer_id);
+    console.log("Customer Id: ", pickTicket.customer_id, " of Pick Ticket: ", pickTicket.pick_ticket_id);
     // Get Customer data
     await fetchCustomerRecords(pickTicket.customer_id)
       .then((customerResponse) => {
         pickTicket.customerData = customerResponse;
-        pickTicket.alreadyProcessed = false;
       })
       .catch((err) => {
         console.log(err);
+        console.error("error for fetchCustomerRecords: ", pickTicket.customer_id);
       });
     endPickId = pickTicket.pick_ticket_id;
     //Get warehouse data from DB
     await getWareHouseData(pickTicket);
   }
-  console.log("data fetch complete");
+  console.log("Data fetched till Pick Ticket: ", endPickId);
   //Processing of the data
   let processedData = Object.values(filterDataForCSV(unprocessedData?.response)).map((obj) => flatten(obj));
-  // console.log("processedData", processedData);
+  console.log("Filter and process complete for ", processedData.length, " records");
   //CSV creation
   if (processedData.length != 0) {
     convertToCsv(processedData, `${filePrefix}_${endPickId}`);
+    console.log("CSV created with prefix: ", `${filePrefix}_${endPickId}`);
   }
+  // to update details in DB
   unprocessedData.endPickId = endPickId;
   return unprocessedData;
 };
 const getWareHouseData = async (pickTicketData) => {
   let pickTicketItemData = {};
   for (item of pickTicketData?.pick_ticket_items) {
-    console.log("upc code from pick ticket", item?.upc);
+    // console.log("upc code from pick ticket", item?.upc);
     let upcDataDB = await Database.WareHouseItem.find({
       UPC: item?.upc,
     });
@@ -163,6 +157,8 @@ const getWareHouseData = async (pickTicketData) => {
       }
       pickTicketItemData[processUpcKey][upcDataDB[0]?.Size]["totalQuantity"] = quantity.toString();
       pickTicketItemData[processUpcKey][upcDataDB[0]?.Size]["orderQuantity"] = quantity.toString();
+    } else {
+      console.log("UPC code: ", item?.upc, " not avaialble for pick ticket: ", pickTicketData.pick_ticket_id);
     }
   }
   // console.log("pickTicketItemData", JSON.stringify(pickTicketItemData));
@@ -202,7 +198,7 @@ const optimisePickTicketItem = (pickTicketItemData) => {
     // processed data for reporting
     for (let [orderType, orderTypeValue] of Object.entries(styleColorNameValue)) {
       if (parseFloat(orderTypeValue?.orderQuantity) > 0) {
-        console.log("orderType", orderType, parseFloat(orderTypeValue?.orderQuantity));
+        console.debug("orderType", orderType, parseFloat(orderTypeValue?.orderQuantity));
         processedPickItems.push({
           CompanyDivisionCode: orderTypeValue?.Division,
           CompanyDivisionDescription: orderTypeValue?.Division,
@@ -215,7 +211,7 @@ const optimisePickTicketItem = (pickTicketItemData) => {
     }
   }
   pickTicketItemData.processedPickItems = processedPickItems;
-  console.log("pickTicketItemData", JSON.stringify(pickTicketItemData));
+  console.debug("pickTicketItemData final data: ", JSON.stringify(pickTicketItemData));
   return pickTicketItemData;
 };
 const initDatabase = () => {
@@ -228,9 +224,10 @@ const initDatabase = () => {
     .catch((err) => console.log(err));
 };
 const cronJob = cron.schedule(pjson.env.cronSchedule, () => {
-  console.log("Cron started");
+  console.log("########### Schedule start at ", new Date(), "###########");
   let [pageSize, currentPage] = [pjson.env.pageSize, pjson.env.currentPage];
   let processedData = createRecords(pageSize, currentPage);
+  // console.log("########### Schedule end at ", Date.now().toString(), "###########");
   // console.log("Cron end with", processedData);
 });
 module.exports = { initDatabase, createRecords };

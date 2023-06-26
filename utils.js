@@ -5,9 +5,11 @@ module.exports = {
   convertToCsv: async (jsonData, filePrefix) => {
     const csvData = json2csv(jsonData);
     return new Promise((resolve, reject) => {
-      fs.writeFile(`${pjson.env.csvLocation}/csv_files/${filePrefix}_${Date.now()}.csv`, csvData, "utf8", (err) => {
+      fs.writeFile(`${pjson.env.csvLocation}/${filePrefix}_${Date.now()}.csv`, csvData, "utf8", (err) => {
         if (err) {
-          reject({ msg: "error while creating csv file" });
+          resolve({ msg: "error while creating csv file" });
+          console.error("Error for convertToCsv: ", filePrefix);
+          console.log("Error details: ", err);
           // console.log("convertToCsv error".err);
         } else {
           resolve({ msg: "file created successfully" });
