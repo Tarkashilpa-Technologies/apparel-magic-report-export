@@ -78,13 +78,13 @@ module.exports = {
       for (processedPickItemsValue of record?.pickTicketItemData?.processedPickItems) {
         processedData.push({
           MessageSendingDate: "",
-          AIMS360ClientCode: "CHLOE",
-          AIMS360ClientName: "Chloe J llc - DBA Jocelyn",
+          AIMS360ClientCode: "MT",
+          AIMS360ClientName: "MT",
           AIMS360CustOrderNum: record?.order_id,
-          COD: "No", //TODO: Confirm details
+          COD: "", //TODO: Confirm details
           CompanyDivisionCode: processedPickItemsValue?.CompanyDivisionCode,
           CompanyDivisionDescription: processedPickItemsValue?.CompanyDivisionDescription,
-          CompanyName: "Chloe J LLC DBA Jocelyn",
+          CompanyName: "MT",
           CustomerAcctCode: record?.customerData?.customer_id,
           CustomerName: record?.customerData?.customer_name,
           DepartmentCode: "",
@@ -97,12 +97,12 @@ module.exports = {
           MarkForStoreName: "",
           MarkForStoreNumber: "",
           MerchType: "",
-          OrderType: "RETAIL", //TODO: Confirm details
+          OrderType: "REG", //TODO: Confirm details
           PONum: record?.customer_po,
           ReferenceNum: record?.pick_ticket_id,
           ServiceLevel: "",
-          WarehouseCode: "", //TODO: Confirm details
-          WarehouseName: "CREATIVE LOGISTIC SERVICES",
+          WarehouseCode: "CLS", //TODO: Confirm details
+          WarehouseName: "Creative Logistic Services",
           BillTo_BillToCode: "",
           BillTo_Email: record?.customerData?.email,
           BillTo_Name: record?.customerData?.first_name,
