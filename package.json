@@ -25,6 +25,7 @@
     "flat": "^5.0.2",
     "fs": "0.0.1-security",
     "json2csv": "^6.0.0-alpha.2",
+    "mongoose": "^7.3.1",
     "node-cron": "^3.0.2",
     "nodemon": "^2.0.22",
     "ssh2-sftp-client": "^9.1.0"
@@ -32,11 +33,19 @@
   "description": "",
   "env": {
     "port": "3000",
-    "host": "ftp.dlptest.com",
-    "user": "dlpuser",
-    "password": "rNrKYTX9g7z3RgJRmxWuGHbeu",
-    "secure": false,
+    "//host": "ftp.dlptest.com",
+    "//user": "dlpuser",
+    "//password": "rNrKYTX9g7z3RgJRmxWuGHbeu",
+    "//secure": false,
+    "csvLocation": "D:/Report940/csv_files",
+    "dayZeroPickTicketId": "14020",
     "baseUrl": "https://lcr-black-edition.app.apparelmagic.com/api/json",
-    "token": "4bd4c51e72757fa3dc41f72b1eb7487f"
+    "token": "4bd4c51e72757fa3dc41f72b1eb7487f",
+    "pageSize": 100,
+    "currentPage": 1,
+    "cronSchedule": "* * * * *",
+    "//cronSchedule": "15 0-23/4 * * *",
+    "mongooseUrl": "mongodb://0.0.0.0:27017/?retryWrites=true&w=majority",
+    "//mongooseUrl": "mongodb+srv://navaltk:Fzbpv2A3UFAM19Kt@cluster0.dokdtz4.mongodb.net/?retryWrites=true&w=majority"
   }
 }
