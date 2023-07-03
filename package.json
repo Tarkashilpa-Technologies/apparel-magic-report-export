@@ -27,6 +27,7 @@
     "json2csv": "^6.0.0-alpha.2",
     "mongoose": "^7.3.1",
     "node-cron": "^3.0.2",
+    "nodemailer": "^6.9.3",
     "nodemon": "^2.0.22",
     "ssh2-sftp-client": "^9.1.0"
   },
@@ -46,6 +47,12 @@
     "cronSchedule": "* * * * *",
     "//cronSchedule": "15 0-23/4 * * *",
     "mongooseUrl": "mongodb://0.0.0.0:27017/?retryWrites=true&w=majority",
-    "//mongooseUrl": "mongodb+srv://navaltk:Fzbpv2A3UFAM19Kt@cluster0.dokdtz4.mongodb.net/?retryWrites=true&w=majority"
+    "//mongooseUrl": "mongodb+srv://navaltk:Fzbpv2A3UFAM19Kt@cluster0.dokdtz4.mongodb.net/?retryWrites=true&w=majority",
+    "emailFrom": "harshgupta2205@gmail.com",
+    "emailHost": "smtp.gmail.com",
+    "emailUsername": "harshgupta2205@gmail.com",
+    "emailPassword": "",
+    "emailSubject": "Test mail from App",
+    "emailTo": "harsh.gupta2205@gmail.com"
   }
 }

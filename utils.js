@@ -1,6 +1,7 @@
 const json2csv = require("json2csv").parse;
 const fs = require("fs");
 const pjson = require("./package.json");
+var nodemailer = require("nodemailer");
 module.exports = {
   convertToCsv: async (jsonData, filePrefix) => {
     const csvData = json2csv(jsonData);
@@ -168,5 +169,33 @@ module.exports = {
       }
     }
     return processedData;
+  },
+  // create reusable transporter object using the default SMTP transport
+  sendEmail: (body, emailTo = pjson.env.emailTo, subject = pjson.env.emailSubject) => {
+    const mailData = {
+      from: pjson.env.emailFrom, // sender address
+      to: emailTo, // list of receivers
+      subject: subject,
+      text: body,
+      html: body,
+    };
+    const transporter = nodemailer.createTransport({
+      port: 465, // true for 465, false for other ports
+      host: pjson.env.emailHost,
+      auth: {
+        user: pjson.env.emailUsername,
+        pass: pjson.env.emailPassword,
+      },
+      secure: true,
+    });
+    // console.log("mailData", mailData);
+    transporter.sendMail(mailData, function (err, info) {
+      if (err) {
+        console.error("Error for sendEmail: ", body);
+        console.log("Error details: ", err);
+      } else {
+        console.log("sendEmail success with ", info);
+      }
+    });
   },
 };

@@ -1,4 +1,4 @@
-const { apiStringWithEventTime, filterDataForCSV, convertToCsv } = require("../utils");
+const { apiStringWithEventTime, filterDataForCSV, convertToCsv, sendEmail } = require("../utils");
 const axios = require("axios");
 const pjson = require("../package.json");
 const flatten = require("flat");
@@ -7,6 +7,7 @@ const Database = require("../Database");
 const cron = require("node-cron");
 const dbUrl = pjson.env.mongooseUrl;
 
+let emailData = new Array();
 // module.exports = {
 const fetchCustomerRecords = async (customerId) => {
   return new Promise((resolve) => {
@@ -92,6 +93,7 @@ const createRecords = async (pageSize) => {
 };
 const createBatchRecords = async (pageSize, currentPage, lastPickTicketId) => {
   console.log("fetching details for page: ", currentPage);
+  emailData = new Array();
   let unprocessedData = await fetchRecords(pageSize, currentPage, lastPickTicketId);
   let [filePrefix, endPickId] = [unprocessedData?.response[0]?.pick_ticket_id, lastPickTicketId];
   console.log("Fetching data from Pick Ticket: ", lastPickTicketId);
@@ -118,6 +120,9 @@ const createBatchRecords = async (pageSize, currentPage, lastPickTicketId) => {
   if (processedData.length != 0) {
     convertToCsv(processedData, `${filePrefix}_${endPickId}`);
     console.log("CSV created with prefix: ", `${filePrefix}_${endPickId}`);
+  }
+  if (emailData.length != 0) {
+    sendEmail(emailData.join("<br/>"));
   }
   // to update details in DB
   unprocessedData.endPickId = endPickId;
@@ -158,6 +163,7 @@ const getWareHouseData = async (pickTicketData) => {
       pickTicketItemData[processUpcKey][upcDataDB[0]?.Size]["totalQuantity"] = quantity.toString();
       pickTicketItemData[processUpcKey][upcDataDB[0]?.Size]["orderQuantity"] = quantity.toString();
     } else {
+      emailData.push("UPC code: " + item?.upc + " not avaialble for pick ticket: " + pickTicketData.pick_ticket_id);
       console.log("UPC code: ", item?.upc, " not avaialble for pick ticket: ", pickTicketData.pick_ticket_id);
     }
   }
