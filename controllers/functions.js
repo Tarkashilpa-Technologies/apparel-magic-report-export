@@ -28,6 +28,7 @@ const fetchRecords = async (pageSize = pjson.env.pageSize, currentPage = pjson.e
   return new Promise((resolve) => {
     // console.log("fetchRecords lastPickTicketId", lastPickTicketId);
     let startPickTicketId = parseInt(lastPickTicketId) + 1;
+    // let apiString = `https://lcr-black-edition.app.apparelmagic.com/api/json/pick_tickets/14029?time=${Date.now()}&token=4bd4c51e72757fa3dc41f72b1eb7487f`
     let apiString = apiStringWithEventTime(
       "pick_tickets/",
       "&pagination[page_number]=" +
@@ -94,6 +95,8 @@ const createRecords = async (pageSize) => {
 const createBatchRecords = async (pageSize, currentPage, lastPickTicketId) => {
   console.log("fetching details for page: ", currentPage);
   emailData = new Array();
+
+  // let unprocessedData = await fetchRecords(pageSize, currentPage, lastPickTicketId);
   let unprocessedData = await fetchRecords(pageSize, currentPage, lastPickTicketId);
   let [filePrefix, endPickId] = [unprocessedData?.response[0]?.pick_ticket_id, lastPickTicketId];
   console.log("Fetching data from Pick Ticket: ", lastPickTicketId);
@@ -174,8 +177,8 @@ const getWareHouseData = async (pickTicketData) => {
 const optimisePickTicketItem = (pickTicketItemData) => {
   let processedPickItems = new Array();
   for (let [styleColorName, styleColorNameValue] of Object.entries(pickTicketItemData)) {
-    let packRatio = styleColorNameValue?.packDetails?.Ratio.split("-");
-    let packSize = styleColorNameValue?.packDetails?.["Prepack Size Name"].split("-");
+    let packRatio = styleColorNameValue?.packDetails?.Ratio.split("-") ? styleColorNameValue?.packDetails?.Ratio.split("-"): [];
+    let packSize = styleColorNameValue?.packDetails?.["Prepack Size Name"].split("-") ? styleColorNameValue?.packDetails?.["Prepack Size Name"].split("-") : [];
     let eligiableForPack = true;
     let maxPack;
     // Check for pack eligiblity and possible packs
