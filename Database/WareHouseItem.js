@@ -14,7 +14,7 @@ const WareHouseItem = new Schema(
     "Color Desc": { type: String, default: "" },
     PPK: { type: String, default: "" },
     Size: { type: String, default: "" },
-    UPC: { type: String, default: "" },
+    UPC: { type: Number, default: "" },
     Ratio: { type: String, default: "" },
     "Prepack Size Name": { type: String, default: "" },
     "Combine Size + Ratio": { type: String, default: "" },
