@@ -173,8 +173,8 @@ module.exports = {
           Item_SKU: processedPickItemsValue?.Item_SKU,
           Item_UOM: processedPickItemsValue?.Item_UOM,
           Item_UPC: processedPickItemsValue?.Item_UPC,
-          Item_Notes: "", // No detail available
-          Notes: "", // No detail available
+          Item_Notes: processedPickItemsValue.notes, // No detail available
+          Notes: record.notes, // No detail available
         });
       }
     }
