@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const Database = require("../Database");
 const cron = require("node-cron");
 const dbUrl = pjson.env.mongooseUrl;
+const { get } = require('lodash')
 
 let emailData = new Array();
 // module.exports = {
@@ -110,6 +111,13 @@ const createBatchRecords = async (pageSize, currentPage, lastPickTicketId) => {
       });
     endPickId = pickTicket.pick_ticket_id;
     //Get warehouse data from DB
+    if(!isNaN?.(pickTicket?.ship_via)){
+      await getShipInfo(pickTicket.ship_via)
+      .then((shipInfo) => {
+        console.log("v2");
+        pickTicket.ExentaShipViaCode = shipInfo
+      })
+    }
     await getWareHouseData(pickTicket);
   }
   console.log("Data fetched till Pick Ticket: ", endPickId);
@@ -243,4 +251,13 @@ const cronJob = cron.schedule(pjson.env.cronSchedule, () => {
   // console.log("########### Schedule end at ", Date.now().toString(), "###########");
   // console.log("Cron end with", processedData);
 });
+const getShipInfo = async (shipId) => {
+  return new Promise(async (resolve) => {
+    let shipInfoData = await Database.ShipInfo.findOne({
+      shipId: parseInt(shipId)
+    });
+    let ExentaShipViaCode = get(shipInfoData, 'ExentaShipViaCode', '')
+    resolve(ExentaShipViaCode)
+  });
+};
 module.exports = { initDatabase, createRecords };
