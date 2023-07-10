@@ -121,7 +121,7 @@ const createBatchRecords = async (pageSize, currentPage, lastPickTicketId) => {
     convertToCsv(processedData, `${filePrefix}_${endPickId}`);
     console.log("CSV created with prefix: ", `${filePrefix}_${endPickId}`);
   }
-  if (emailData.length != 0) {
+  if (emailData.length != 0 && pjson.env.enableEmail) {
     sendEmail(emailData.join("<br/>"));
   }
   // to update details in DB
@@ -130,6 +130,7 @@ const createBatchRecords = async (pageSize, currentPage, lastPickTicketId) => {
 };
 const getWareHouseData = async (pickTicketData) => {
   let pickTicketItemData = {};
+  const emailDataLength = emailData.length;
   for (item of pickTicketData?.pick_ticket_items) {
     // console.log("upc code from pick ticket", item?.upc);
     let upcDataDB = await Database.WareHouseItem.find({
@@ -166,6 +167,12 @@ const getWareHouseData = async (pickTicketData) => {
       emailData.push("UPC code: " + item?.upc + " not avaialble for pick ticket: " + pickTicketData.pick_ticket_id);
       console.log("UPC code: ", item?.upc, " not avaialble for pick ticket: ", pickTicketData.pick_ticket_id);
     }
+  }
+  //check if pick ticket item is not available
+  if (emailData.length != emailDataLength) {
+    pickTicketData.pickTicketItemData = optimisePickTicketItem({});
+    console.log("Skiping records for pick ticket ", pickTicketData.pick_ticket_id);
+    return;
   }
   // console.log("pickTicketItemData", JSON.stringify(pickTicketItemData));
   // Optimise Items and store

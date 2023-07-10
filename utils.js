@@ -3,6 +3,16 @@ const fs = require("fs");
 const pjson = require("./package.json");
 var nodemailer = require("nodemailer");
 module.exports = {
+  createDirectory: async (jsonData, filePrefix) => {
+    fs.access(pjson.env.csvLocation, function (error) {
+      if (error) {
+        console.log("Directory does not exist creating same.");
+        fs.mkdirSync(pjson.env.csvLocation, { recursive: true });
+      } else {
+        console.log("Directory location ", pjson.env.csvLocation, " exists.");
+      }
+    });
+  },
   convertToCsv: async (jsonData, filePrefix) => {
     const csvData = json2csv(jsonData);
     return new Promise((resolve, reject) => {
