@@ -1,0 +1,721 @@
+[{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c5c"
+  },
+  "shipId": 1,
+  "provider": "FedEx",
+  "name": "Ground",
+  "ExentaShipViaCode": "F921P",
+  "Notes": "Use only for Prepaid",
+  "num_days": 0,
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c5d"
+  },
+  "shipId": 4,
+  "provider": "UPS Collect",
+  "name": "Ground®",
+  "ExentaShipViaCode": "UP03R",
+  "num_days": 0,
+  "flat_rate": 0,
+  "tracking_url": "https://www.ups.com/track?tracknum=[Tracking Number Spaced]"
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c5e"
+  },
+  "shipId": 5,
+  "provider": "FedEx Collect",
+  "name": "Ground",
+  "ExentaShipViaCode": "F922R",
+  "num_days": 0,
+  "flat_rate": 0,
+  "tracking_url": "https://www.fedex.com/fedextrack/?tracknumbers=[Tracking Number]"
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c5f"
+  },
+  "shipId": 6,
+  "provider": "FedEx Int'l Economy",
+  "name": "Air",
+  "ExentaShipViaCode": "FIEPP",
+  "Notes": "Use only for Prepaid",
+  "num_days": 0,
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c60"
+  },
+  "shipId": 7,
+  "provider": "FedEx Int'l Priority",
+  "name": "Air",
+  "ExentaShipViaCode": "FIPPP",
+  "Notes": "Use only for Prepaid",
+  "num_days": 0,
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c61"
+  },
+  "shipId": 8,
+  "provider": "DHL",
+  "name": "Express",
+  "ExentaShipViaCode": "DHL",
+  "num_days": 0,
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c62"
+  },
+  "shipId": 9,
+  "provider": "UCL TRUCKING",
+  "ExentaShipViaCode": "UCL",
+  "num_days": 0,
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c63"
+  },
+  "shipId": 10,
+  "provider": "USPS",
+  "name": "INSURED",
+  "ExentaShipViaCode": "NA",
+  "Notes": "Please confirm this is not required as its not used",
+  "num_days": 0,
+  "flat_rate": 0,
+  "tracking_url": "https://tools.usps.com/go/TrackConfirmAction?tLabels=[Tracking Number]"
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c64"
+  },
+  "shipId": 11,
+  "provider": "TRUCKING",
+  "ExentaShipViaCode": "TRUC",
+  "num_days": 0,
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c65"
+  },
+  "shipId": 20,
+  "provider": "FedEx",
+  "name": "Ground®",
+  "ExentaShipViaCode": "F921P",
+  "Notes": "Use only for Prepaid",
+  "num_days": 0,
+  "shipstation_carrier": "fedex",
+  "shipstation_service": "fedex_ground",
+  "flat_rate": 0,
+  "tracking_url": "https://www.fedex.com/fedextrack/?tracknumbers=[Tracking Number]"
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c66"
+  },
+  "shipId": 21,
+  "provider": "FedEx",
+  "name": "Home Delivery®",
+  "ExentaShipViaCode": "F923P",
+  "Notes": "Use only for Prepaid",
+  "num_days": 0,
+  "shipstation_carrier": "fedex",
+  "shipstation_service": "fedex_home_delivery",
+  "flat_rate": 0,
+  "tracking_url": "https://www.fedex.com/fedextrack/?tracknumbers=[Tracking Number]"
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c67"
+  },
+  "shipId": 22,
+  "provider": "FedEx",
+  "name": "2Day®",
+  "ExentaShipViaCode": "F031P",
+  "Notes": "Use only for Prepaid",
+  "num_days": 2,
+  "shipstation_carrier": "fedex",
+  "shipstation_service": "fedex_2day",
+  "flat_rate": 0,
+  "tracking_url": "https://www.fedex.com/fedextrack/?tracknumbers=[Tracking Number]"
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c68"
+  },
+  "shipId": 24,
+  "provider": "FedEx",
+  "name": "Express Saver®",
+  "ExentaShipViaCode": "F201P",
+  "Notes": "Use only for Prepaid",
+  "num_days": 3,
+  "shipstation_carrier": "fedex",
+  "shipstation_service": "fedex_express_saver",
+  "flat_rate": 0,
+  "tracking_url": "https://www.fedex.com/fedextrack/?tracknumbers=[Tracking Number]"
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c69"
+  },
+  "shipId": 25,
+  "provider": "FedEx",
+  "name": "Standard Overnight®",
+  "ExentaShipViaCode": "F051P",
+  "Notes": "Use only for Prepaid",
+  "num_days": 1,
+  "shipstation_carrier": "fedex",
+  "shipstation_service": "fedex_standard_overnight",
+  "flat_rate": 0,
+  "tracking_url": "https://www.fedex.com/fedextrack/?tracknumbers=[Tracking Number]"
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c6a"
+  },
+  "shipId": 26,
+  "provider": "FedEx",
+  "name": "Priority Overnight®",
+  "ExentaShipViaCode": "F011P",
+  "Notes": "Use only for Prepaid",
+  "num_days": 1,
+  "shipstation_carrier": "fedex",
+  "shipstation_service": "fedex_priority_overnight",
+  "flat_rate": 0,
+  "tracking_url": "https://www.fedex.com/fedextrack/?tracknumbers=[Tracking Number]"
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c6b"
+  },
+  "shipId": 32,
+  "provider": "FedEx",
+  "name": "International Ground®",
+  "ExentaShipViaCode": "NA",
+  "Notes": "Please confirm this is not required as its not used",
+  "num_days": 0,
+  "shipstation_carrier": "fedex",
+  "shipstation_service": "fedex_ground_international",
+  "flat_rate": 0,
+  "tracking_url": "https://www.fedex.com/fedextrack/?tracknumbers=[Tracking Number]"
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c6c"
+  },
+  "shipId": 33,
+  "provider": "FedEx",
+  "name": "International Economy®",
+  "ExentaShipViaCode": "FIEPP",
+  "Notes": "Use only for Prepaid",
+  "num_days": 0,
+  "shipstation_carrier": "fedex",
+  "shipstation_service": "fedex_international_economy",
+  "flat_rate": 0,
+  "tracking_url": "https://www.fedex.com/fedextrack/?tracknumbers=[Tracking Number]"
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c6d"
+  },
+  "shipId": 34,
+  "provider": "FedEx",
+  "name": "International Priority®",
+  "ExentaShipViaCode": "FIPPP",
+  "Notes": "Use only for Prepaid",
+  "num_days": 0,
+  "shipstation_carrier": "fedex",
+  "shipstation_service": "fedex_international_priority",
+  "flat_rate": 0,
+  "tracking_url": "https://www.fedex.com/fedextrack/?tracknumbers=[Tracking Number]"
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c6e"
+  },
+  "shipId": 35,
+  "provider": "Q-EXPRESS TRUCKING",
+  "ExentaShipViaCode": "QEXP",
+  "num_days": 0,
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c6f"
+  },
+  "shipId": 36,
+  "provider": "Container",
+  "name": "Turkon",
+  "ExentaShipViaCode": "CONT",
+  "num_days": 30,
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c70"
+  },
+  "shipId": 37,
+  "provider": "AIT",
+  "name": "AIR",
+  "ExentaShipViaCode": "AIR",
+  "num_days": 0,
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c71"
+  },
+  "shipId": 38,
+  "provider": "SELF PICK UP",
+  "ExentaShipViaCode": "SEPU",
+  "num_days": 0,
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c72"
+  },
+  "shipId": 39,
+  "provider": "Steven Global",
+  "name": "Air",
+  "ExentaShipViaCode": "STEG",
+  "num_days": 0,
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c73"
+  },
+  "shipId": 40,
+  "provider": "AIR",
+  "ExentaShipViaCode": "AIR",
+  "num_days": 7,
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c74"
+  },
+  "shipId": 41,
+  "provider": "KOAM EXPRESS",
+  "ExentaShipViaCode": "KOAM",
+  "num_days": 0,
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c75"
+  },
+  "shipId": 42,
+  "provider": "UPS",
+  "name": "Ground®",
+  "ExentaShipViaCode": "UP03P",
+  "Notes": "Use only for Prepaid",
+  "num_days": 0,
+  "flat_rate": 0,
+  "tracking_url": "https://www.ups.com/track?tracknum=[Tracking Number Spaced]"
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c76"
+  },
+  "shipId": 43,
+  "provider": "UPS",
+  "name": "Next Day Air®",
+  "ExentaShipViaCode": "UP01P",
+  "Notes": "Use only for Prepaid",
+  "num_days": 1,
+  "flat_rate": 0,
+  "tracking_url": "https://www.ups.com/track?tracknum=[Tracking Number Spaced]"
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c77"
+  },
+  "shipId": 44,
+  "provider": "UPS",
+  "name": "Next Day Air Saver®",
+  "ExentaShipViaCode": "UP13P",
+  "Notes": "Use only for Prepaid",
+  "num_days": 1,
+  "flat_rate": 0,
+  "tracking_url": "https://www.ups.com/track?tracknum=[Tracking Number Spaced]"
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c78"
+  },
+  "shipId": 47,
+  "provider": "UPS",
+  "name": "2nd Day Air®",
+  "ExentaShipViaCode": "UP02P",
+  "Notes": "Use only for Prepaid",
+  "num_days": 2,
+  "flat_rate": 0,
+  "tracking_url": "https://www.ups.com/track?tracknum=[Tracking Number Spaced]"
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c79"
+  },
+  "shipId": 48,
+  "provider": "UPS",
+  "name": "3 Day Select®",
+  "ExentaShipViaCode": "UP12P",
+  "Notes": "Use only for Prepaid",
+  "num_days": 3,
+  "flat_rate": 0,
+  "tracking_url": "https://www.ups.com/track?tracknum=[Tracking Number Spaced]"
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c7a"
+  },
+  "shipId": 49,
+  "provider": "CONTAINER",
+  "ExentaShipViaCode": "CONT",
+  "num_days": 30,
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c7b"
+  },
+  "shipId": 50,
+  "provider": "ACTION CARGO",
+  "ExentaShipViaCode": "ACTC",
+  "num_days": 0,
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c7c"
+  },
+  "shipId": 51,
+  "provider": "ESTES EXPRESS LINE",
+  "ExentaShipViaCode": "ESTE",
+  "num_days": 0,
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c7d"
+  },
+  "shipId": 53,
+  "provider": "JAY-DEE",
+  "ExentaShipViaCode": "JAYDE",
+  "num_days": 0,
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c7e"
+  },
+  "shipId": 54,
+  "provider": "Stamps.com",
+  "name": "USPS First Class Mail",
+  "ExentaShipViaCode": "NA",
+  "Notes": "Please confirm this is not required as its not used",
+  "num_days": 0,
+  "shipstation_carrier": "stamps_com",
+  "shipstation_service": "usps_first_class_mail",
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c7f"
+  },
+  "shipId": 55,
+  "provider": "Stamps.com",
+  "name": "USPS Media Mail",
+  "ExentaShipViaCode": "NA",
+  "Notes": "Please confirm this is not required as its not used",
+  "num_days": 0,
+  "shipstation_carrier": "stamps_com",
+  "shipstation_service": "usps_media_mail",
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c80"
+  },
+  "shipId": 56,
+  "provider": "Stamps.com",
+  "name": "USPS Parcel Select Ground",
+  "ExentaShipViaCode": "NA",
+  "Notes": "Please confirm this is not required as its not used",
+  "num_days": 0,
+  "shipstation_carrier": "stamps_com",
+  "shipstation_service": "usps_parcel_select",
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c81"
+  },
+  "shipId": 57,
+  "provider": "Stamps.com",
+  "name": "USPS Priority Mail",
+  "ExentaShipViaCode": "NA",
+  "Notes": "Please confirm this is not required as its not used",
+  "num_days": 0,
+  "shipstation_carrier": "stamps_com",
+  "shipstation_service": "usps_priority_mail",
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c82"
+  },
+  "shipId": 58,
+  "provider": "Stamps.com",
+  "name": "USPS Priority Mail Express",
+  "ExentaShipViaCode": "NA",
+  "Notes": "Please confirm this is not required as its not used",
+  "num_days": 0,
+  "shipstation_carrier": "stamps_com",
+  "shipstation_service": "usps_priority_mail_express",
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c83"
+  },
+  "shipId": 59,
+  "provider": "Stamps.com",
+  "name": "USPS First Class Mail Intl",
+  "ExentaShipViaCode": "NA",
+  "Notes": "Please confirm this is not required as its not used",
+  "num_days": 0,
+  "shipstation_carrier": "stamps_com",
+  "shipstation_service": "usps_first_class_mail_international",
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c84"
+  },
+  "shipId": 60,
+  "provider": "Stamps.com",
+  "name": "USPS Priority Mail Intl",
+  "ExentaShipViaCode": "NA",
+  "Notes": "Please confirm this is not required as its not used",
+  "num_days": 0,
+  "shipstation_carrier": "stamps_com",
+  "shipstation_service": "usps_priority_mail_international",
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c85"
+  },
+  "shipId": 61,
+  "provider": "Stamps.com",
+  "name": "USPS Priority Mail Express Intl",
+  "ExentaShipViaCode": "NA",
+  "Notes": "Please confirm this is not required as its not used",
+  "num_days": 0,
+  "shipstation_carrier": "stamps_com",
+  "shipstation_service": "usps_priority_mail_express_international",
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c86"
+  },
+  "shipId": 62,
+  "provider": "UPS by ShipStation",
+  "name": "UPS® Ground",
+  "ExentaShipViaCode": "UP03P",
+  "Notes": "Use only for Prepaid",
+  "num_days": 0,
+  "shipstation_carrier": "ups_walleted",
+  "shipstation_service": "ups_ground",
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c87"
+  },
+  "shipId": 63,
+  "provider": "UPS by ShipStation",
+  "name": "UPS 3 Day Select®",
+  "ExentaShipViaCode": "UP12P",
+  "Notes": "Use only for Prepaid",
+  "num_days": 0,
+  "shipstation_carrier": "ups_walleted",
+  "shipstation_service": "ups_3_day_select",
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c88"
+  },
+  "shipId": 64,
+  "provider": "UPS by ShipStation",
+  "name": "UPS 2nd Day Air®",
+  "ExentaShipViaCode": "UP02P",
+  "Notes": "Use only for Prepaid",
+  "num_days": 0,
+  "shipstation_carrier": "ups_walleted",
+  "shipstation_service": "ups_2nd_day_air",
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c89"
+  },
+  "shipId": 65,
+  "provider": "UPS by ShipStation",
+  "name": "UPS Worldwide Express®",
+  "ExentaShipViaCode": "NA",
+  "Notes": "Please confirm this is not required as its not used",
+  "num_days": 0,
+  "shipstation_carrier": "ups_walleted",
+  "shipstation_service": "ups_worldwide_express",
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c8a"
+  },
+  "shipId": 66,
+  "provider": "UPS by ShipStation",
+  "name": "UPS Next Day Air Saver®",
+  "ExentaShipViaCode": "UP13P",
+  "Notes": "Use only for Prepaid",
+  "num_days": 0,
+  "shipstation_carrier": "ups_walleted",
+  "shipstation_service": "ups_next_day_air_saver",
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c8b"
+  },
+  "shipId": 67,
+  "provider": "UPS by ShipStation",
+  "name": "UPS Next Day Air®",
+  "ExentaShipViaCode": "UP01P",
+  "Notes": "Use only for Prepaid",
+  "num_days": 0,
+  "shipstation_carrier": "ups_walleted",
+  "shipstation_service": "ups_next_day_air",
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c8c"
+  },
+  "shipId": 68,
+  "provider": "UPS by ShipStation",
+  "name": "UPS Worldwide Expedited®",
+  "ExentaShipViaCode": "NA",
+  "Notes": "Please confirm this is not required as its not used",
+  "num_days": 0,
+  "shipstation_carrier": "ups_walleted",
+  "shipstation_service": "ups_worldwide_expedited",
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c8d"
+  },
+  "shipId": 69,
+  "provider": "UPS by ShipStation",
+  "name": "UPS Worldwide Saver®",
+  "ExentaShipViaCode": "NA",
+  "Notes": "Please confirm this is not required as its not used",
+  "num_days": 0,
+  "shipstation_carrier": "ups_walleted",
+  "shipstation_service": "ups_worldwide_saver",
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c8e"
+  },
+  "shipId": 70,
+  "provider": "UPS by ShipStation",
+  "name": "UPS Standard®",
+  "ExentaShipViaCode": "NA",
+  "Notes": "Please confirm this is not required as its not used",
+  "num_days": 0,
+  "shipstation_carrier": "ups_walleted",
+  "shipstation_service": "ups_standard_international",
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c8f"
+  },
+  "shipId": 71,
+  "provider": "UPS by ShipStation",
+  "name": "UPS Next Day Air® Early",
+  "ExentaShipViaCode": "UP14P",
+  "Notes": "Use only for Prepaid",
+  "num_days": 0,
+  "shipstation_carrier": "ups_walleted",
+  "shipstation_service": "ups_next_day_air_early_am",
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c90"
+  },
+  "shipId": 72,
+  "provider": "UPS by ShipStation",
+  "name": "UPS 2nd Day Air AM®",
+  "ExentaShipViaCode": "UP02A",
+  "Notes": "Use only for Prepaid",
+  "num_days": 0,
+  "shipstation_carrier": "ups_walleted",
+  "shipstation_service": "ups_2nd_day_air_am",
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c91"
+  },
+  "shipId": 73,
+  "provider": "UPS by ShipStation",
+  "name": "UPS Worldwide Express Plus®",
+  "ExentaShipViaCode": "NA",
+  "Notes": "Please confirm this is not required as its not used",
+  "num_days": 0,
+  "shipstation_carrier": "ups_walleted",
+  "shipstation_service": "ups_worldwide_express_plus",
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c92"
+  },
+  "shipId": 74,
+  "provider": "UPS by ShipStation",
+  "name": "UPS Ground® (International)",
+  "ExentaShipViaCode": "NA",
+  "Notes": "Please confirm this is not required as its not used",
+  "num_days": 0,
+  "shipstation_carrier": "ups_walleted",
+  "shipstation_service": "ups_ground_international",
+  "flat_rate": 0
+},
+{
+  "_id": {
+    "$oid": "64ac688dfd16d68ad6456c93"
+  },
+  "shipId": 75,
+  "provider": "DAYLIGHT TRANSPORTATION",
+  "ExentaShipViaCode": "DYLT",
+  "num_days": 0,
+  "flat_rate": 0
+}]
