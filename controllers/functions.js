@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const Database = require("../Database");
 const cron = require("node-cron");
 const dbUrl = pjson.env.mongooseUrl;
+const { get } = require('lodash')
 
 let emailData = new Array();
 // module.exports = {
@@ -110,6 +111,13 @@ const createBatchRecords = async (pageSize, currentPage, lastPickTicketId) => {
       });
     endPickId = pickTicket.pick_ticket_id;
     //Get warehouse data from DB
+    if(!isNaN?.(pickTicket?.ship_via)){
+      await getShipInfo(pickTicket.ship_via)
+      .then((shipInfo) => {
+        console.log("v2");
+        pickTicket.ExentaShipViaCode = shipInfo
+      })
+    }
     await getWareHouseData(pickTicket);
   }
   console.log("Data fetched till Pick Ticket: ", endPickId);
@@ -121,7 +129,7 @@ const createBatchRecords = async (pageSize, currentPage, lastPickTicketId) => {
     convertToCsv(processedData, `${filePrefix}_${endPickId}`);
     console.log("CSV created with prefix: ", `${filePrefix}_${endPickId}`);
   }
-  if (emailData.length != 0) {
+  if (emailData.length != 0 && pjson.env.enableEmail) {
     sendEmail(emailData.join("<br/>"));
   }
   // to update details in DB
@@ -130,6 +138,7 @@ const createBatchRecords = async (pageSize, currentPage, lastPickTicketId) => {
 };
 const getWareHouseData = async (pickTicketData) => {
   let pickTicketItemData = {};
+  const emailDataLength = emailData.length;
   for (item of pickTicketData?.pick_ticket_items) {
     // console.log("upc code from pick ticket", item?.upc);
     let upcDataDB = await Database.WareHouseItem.find({
@@ -166,6 +175,12 @@ const getWareHouseData = async (pickTicketData) => {
       emailData.push("UPC code: " + item?.upc + " not avaialble for pick ticket: " + pickTicketData.pick_ticket_id);
       console.log("UPC code: ", item?.upc, " not avaialble for pick ticket: ", pickTicketData.pick_ticket_id);
     }
+  }
+  //check if pick ticket item is not available
+  if (emailData.length != emailDataLength) {
+    pickTicketData.pickTicketItemData = optimisePickTicketItem({});
+    console.log("Skiping records for pick ticket ", pickTicketData.pick_ticket_id);
+    return;
   }
   // console.log("pickTicketItemData", JSON.stringify(pickTicketItemData));
   // Optimise Items and store
@@ -236,4 +251,13 @@ const cronJob = cron.schedule(pjson.env.cronSchedule, () => {
   // console.log("########### Schedule end at ", Date.now().toString(), "###########");
   // console.log("Cron end with", processedData);
 });
+const getShipInfo = async (shipId) => {
+  return new Promise(async (resolve) => {
+    let shipInfoData = await Database.ShipInfo.findOne({
+      shipId: parseInt(shipId)
+    });
+    let ExentaShipViaCode = get(shipInfoData, 'ExentaShipViaCode', '')
+    resolve(ExentaShipViaCode)
+  });
+};
 module.exports = { initDatabase, createRecords };

@@ -2,7 +2,8 @@ const express = require("express");
 const pjson = require("./package.json");
 const app = express();
 const port = pjson.env.port;
-const { initDatabase, cronJob } = require("./controllers/functions");
+const { initDatabase } = require("./controllers/functions");
+const { createDirectory } = require("./utils");
 
 // base URL
 // app.get("/", (req, res) => {
@@ -18,4 +19,5 @@ const { initDatabase, cronJob } = require("./controllers/functions");
 app.listen(port, () => {
   console.log(`apparel-magic-report-export app listening on port ${port}`);
   initDatabase();
+  createDirectory();
 });

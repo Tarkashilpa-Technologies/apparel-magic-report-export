@@ -3,6 +3,16 @@ const fs = require("fs");
 const pjson = require("./package.json");
 var nodemailer = require("nodemailer");
 module.exports = {
+  createDirectory: async (jsonData, filePrefix) => {
+    fs.access(pjson.env.csvLocation, function (error) {
+      if (error) {
+        console.log("Directory does not exist creating same.");
+        fs.mkdirSync(pjson.env.csvLocation, { recursive: true });
+      } else {
+        console.log("Directory location ", pjson.env.csvLocation, " exists.");
+      }
+    });
+  },
   convertToCsv: async (jsonData, filePrefix) => {
     const csvData = json2csv(jsonData);
     return new Promise((resolve, reject) => {
@@ -148,10 +158,10 @@ module.exports = {
           ShipVia_AccountZip: "",
           ShipVia_BillingCode: record?.shipping_terms_id,
           ShipVia_Carrier: record?.shipping_info,
-          ShipVia_Mode: record?.ship_via,
+          ShipVia_Mode: record?.ExentaShipViaCode,
           ShipVia_PackingNotes: "",
           ShipVia_PackingSlipUrl: "",
-          ShipVia_SCACCode: record?.ship_via,
+          ShipVia_SCACCode: record?.ExentaShipViaCode,
           ShipVia_ShippingNotes: "",
           ShipVia_VASNotes: "",
           ShipVia_VASShippingServ: "",
@@ -163,8 +173,8 @@ module.exports = {
           Item_SKU: processedPickItemsValue?.Item_SKU,
           Item_UOM: processedPickItemsValue?.Item_UOM,
           Item_UPC: processedPickItemsValue?.Item_UPC,
-          Item_Notes: "", // No detail available
-          Notes: "", // No detail available
+          Item_Notes: processedPickItemsValue.notes, // No detail available
+          Notes: record.notes, // No detail available
         });
       }
     }

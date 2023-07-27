@@ -53,6 +53,7 @@
     "emailUsername": "harshgupta2205@gmail.com",
     "emailPassword": "",
     "emailSubject": "Test mail from App",
-    "emailTo": "harsh.gupta2205@gmail.com"
+    "emailTo": "harsh.gupta2205@gmail.com",
+    "enableEmail": true
   }
 }
