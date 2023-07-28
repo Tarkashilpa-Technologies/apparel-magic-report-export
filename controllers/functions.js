@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
 const Database = require("../Database");
 const cron = require("node-cron");
 const dbUrl = pjson.env.mongooseUrl;
-const { get } = require('lodash')
+const { get } = require("lodash");
 
 let emailData = new Array();
 // module.exports = {
@@ -96,7 +96,7 @@ const createBatchRecords = async (pageSize, currentPage, lastPickTicketId) => {
   console.log("fetching details for page: ", currentPage);
   emailData = new Array();
   let unprocessedData = await fetchRecords(pageSize, currentPage, lastPickTicketId);
-  let [filePrefix, endPickId] = [unprocessedData?.response[0]?.pick_ticket_id, lastPickTicketId];
+  let [filePrefix, endPickId] = [pjson.env.filenamePrefix + "_" + unprocessedData?.response[0]?.pick_ticket_id, lastPickTicketId];
   console.log("Fetching data from Pick Ticket: ", lastPickTicketId);
   for (let [index, pickTicket] of unprocessedData?.response?.entries()) {
     console.log("Customer Id: ", pickTicket.customer_id, " of Pick Ticket: ", pickTicket.pick_ticket_id);
@@ -111,12 +111,11 @@ const createBatchRecords = async (pageSize, currentPage, lastPickTicketId) => {
       });
     endPickId = pickTicket.pick_ticket_id;
     //Get warehouse data from DB
-    if(!isNaN?.(pickTicket?.ship_via)){
-      await getShipInfo(pickTicket.ship_via)
-      .then((shipInfo) => {
+    if (!isNaN?.(pickTicket?.ship_via)) {
+      await getShipInfo(pickTicket.ship_via).then((shipInfo) => {
         console.log("v2");
-        pickTicket.ExentaShipViaCode = shipInfo
-      })
+        pickTicket.ExentaShipViaCode = shipInfo;
+      });
     }
     await getWareHouseData(pickTicket);
   }
@@ -191,8 +190,12 @@ const optimisePickTicketItem = (pickTicketItemData) => {
   for (let [styleColorName, styleColorNameValue] of Object.entries(pickTicketItemData)) {
     let packRatio = styleColorNameValue?.packDetails?.Ratio.split("-");
     let packSize = styleColorNameValue?.packDetails?.["Prepack Size Name"].split("-");
+    console.log("packSize: ", packSize);
     let eligiableForPack = true;
     let maxPack;
+    if (undefined == packSize) {
+      packSize = new Array();
+    }
     // Check for pack eligiblity and possible packs
     for (let [index, size] of packSize?.entries()) {
       if (!(styleColorNameValue.hasOwnProperty(size) || styleColorNameValue[size]["totalQuantity"] < packRatio[index])) {
@@ -254,10 +257,10 @@ const cronJob = cron.schedule(pjson.env.cronSchedule, () => {
 const getShipInfo = async (shipId) => {
   return new Promise(async (resolve) => {
     let shipInfoData = await Database.ShipInfo.findOne({
-      shipId: parseInt(shipId)
+      shipId: parseInt(shipId),
     });
-    let ExentaShipViaCode = get(shipInfoData, 'ExentaShipViaCode', '')
-    resolve(ExentaShipViaCode)
+    let ExentaShipViaCode = get(shipInfoData, "ExentaShipViaCode", "");
+    resolve(ExentaShipViaCode);
   });
 };
 module.exports = { initDatabase, createRecords };
