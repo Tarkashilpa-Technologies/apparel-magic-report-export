@@ -214,7 +214,8 @@ const optimisePickTicketItem = (pickTicketItemData) => {
       styleColorNameValue.packDetails.orderQuantity = maxPack;
       if (eligiableForPack) {
         for (let [index, size] of packSize?.entries()) {
-          styleColorNameValue[size]["orderQuantity"] = parseFloat(styleColorNameValue[size]["totalQuantity"]) - parseFloat(packRatio[index]) * maxPack;
+          if (styleColorNameValue.hasOwnProperty(size))
+            styleColorNameValue[size]["orderQuantity"] = parseFloat(styleColorNameValue[size]["totalQuantity"]) - parseFloat(packRatio[index]) * maxPack;
         }
       }
       styleColorNameValue.eligiableForPack = eligiableForPack;
