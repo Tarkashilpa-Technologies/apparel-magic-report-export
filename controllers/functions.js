@@ -199,7 +199,7 @@ const optimisePickTicketItem = (pickTicketItemData) => {
     }
     // Check for pack eligiblity and possible packs
     for (let [index, size] of packSize?.entries()) {
-      if (!(styleColorNameValue.hasOwnProperty(size) || styleColorNameValue[size]["totalQuantity"] < packRatio[index])) {
+      if (!(styleColorNameValue.hasOwnProperty(size) && styleColorNameValue[size]["totalQuantity"] < packRatio[index])) {
         eligiableForPack = false;
       } else {
         // Compute Maximum Pack
