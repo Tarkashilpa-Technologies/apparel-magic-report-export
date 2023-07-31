@@ -111,9 +111,10 @@ const createBatchRecords = async (pageSize, currentPage, lastPickTicketId) => {
       });
     endPickId = pickTicket.pick_ticket_id;
     //Get warehouse data from DB
-    if (!isNaN?.(pickTicket?.ship_via)) {
+    if (pickTicket?.ship_via && !isNaN?.(pickTicket?.ship_via)) {
+      console.log("fetching shipping info for ship via", pickTicket?.ship_via);
       await getShipInfo(pickTicket.ship_via).then((shipInfo) => {
-        console.log("v2");
+        console.log("fetched shipinfo as ", shipInfo);
         pickTicket.ExentaShipViaCode = shipInfo;
       });
     }

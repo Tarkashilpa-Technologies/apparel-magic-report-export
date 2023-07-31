@@ -56,6 +56,6 @@
     "emailPassword": "",
     "emailSubject": "Test mail from App",
     "emailTo": "harsh.gupta2205@gmail.com",
-    "enableEmail": true
+    "enableEmail": false
   }
 }
