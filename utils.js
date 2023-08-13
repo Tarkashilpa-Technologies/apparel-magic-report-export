@@ -87,6 +87,7 @@ module.exports = {
     // console.log("unprocessedData", unprocessedData);
     for (record of unprocessedData) {
       for (processedPickItemsValue of record?.pickTicketItemData?.processedPickItems) {
+        let r = record.country
         processedData.push({
           MessageSendingDate: "",
           AIMS360ClientCode: "MT",
@@ -134,8 +135,8 @@ module.exports = {
           MarkFor_Address2: record?.address_2,
           MarkFor_Address3: "",
           MarkFor_City: record?.city,
-          MarkFor_Country: record?.country,
-          MarkFor_CountryCode: record?.country,
+          MarkFor_Country: (r == "") || (r == "USA") || (r == undefined) ? "US" : r,
+          MarkFor_CountryCode: (r == "") || (r == "USA") || (r == undefined) ? "US" : r,
           MarkFor_State: record?.state,
           MarkFor_Zip: record?.postal_code.padStart(5, "0"),
           ShipTo_CompanyName: record?.ship_to_id,
@@ -150,8 +151,8 @@ module.exports = {
           ShipTo_Address2: record?.address_2,
           ShipTo_Address3: "",
           ShipTo_City: record?.city,
-          ShipTo_Country: record?.country,
-          ShipTo_CountryCode: record?.country,
+          ShipTo_Country: (r == "") || (r == "USA") || (r == undefined) ? "US" : r,
+          ShipTo_CountryCode: (r == "") || (r == "USA") || (r == undefined) ? "US" : r,
           ShipTo_State: record?.state,
           ShipTo_Zip: record?.postal_code.padStart(5, "0"),
           ShipVia_Account: "",
@@ -174,7 +175,7 @@ module.exports = {
           Item_UOM: processedPickItemsValue?.Item_UOM,
           Item_UPC: processedPickItemsValue?.Item_UPC,
           Item_Notes: processedPickItemsValue.notes, // No detail available
-          Notes: record.notes, // No detail available
+          Notes: record?.shipping_info, // No detail available
         });
       }
     }
