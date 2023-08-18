@@ -111,9 +111,10 @@ const createBatchRecords = async (pageSize, currentPage, lastPickTicketId) => {
       });
     endPickId = pickTicket.pick_ticket_id;
     //Get warehouse data from DB
-    if (!isNaN?.(pickTicket?.ship_via)) {
+    if (pickTicket?.ship_via && !isNaN?.(pickTicket?.ship_via)) {
+      console.log("fetching shipping info for ship via", pickTicket?.ship_via);
       await getShipInfo(pickTicket.ship_via).then((shipInfo) => {
-        console.log("v2");
+        console.log("fetched shipinfo as ", shipInfo);
         pickTicket.ExentaShipViaCode = shipInfo;
       });
     }
@@ -198,9 +199,9 @@ const optimisePickTicketItem = (pickTicketItemData) => {
     }
     // Check for pack eligiblity and possible packs
     for (let [index, size] of packSize?.entries()) {
-      if (!(styleColorNameValue.hasOwnProperty(size) || styleColorNameValue[size]["totalQuantity"] < packRatio[index])) {
-        eligiableForPack = false;
-      } else {
+      // console.log("Size avilable", styleColorNameValue.hasOwnProperty(size));
+      // console.log("totalQuantity avilable", styleColorNameValue[size]["totalQuantity"]);
+      if (styleColorNameValue.hasOwnProperty(size) && styleColorNameValue[size]["totalQuantity"] >= packRatio[index]) {
         // Compute Maximum Pack
         let tempPack = Math.floor(parseFloat(styleColorNameValue[size]["totalQuantity"]) / parseFloat(packRatio[index]));
         if (index == 0) {
@@ -208,12 +209,15 @@ const optimisePickTicketItem = (pickTicketItemData) => {
         } else {
           maxPack = tempPack < maxPack ? tempPack : maxPack;
         }
+      } else {
+        eligiableForPack = false;
       }
       //update orderQuantity by pack value
       styleColorNameValue.packDetails.orderQuantity = maxPack;
       if (eligiableForPack) {
         for (let [index, size] of packSize?.entries()) {
-          styleColorNameValue[size]["orderQuantity"] = parseFloat(styleColorNameValue[size]["totalQuantity"]) - parseFloat(packRatio[index]) * maxPack;
+          if (styleColorNameValue.hasOwnProperty(size))
+            styleColorNameValue[size]["orderQuantity"] = parseFloat(styleColorNameValue[size]["totalQuantity"]) - parseFloat(packRatio[index]) * maxPack;
         }
       }
       styleColorNameValue.eligiableForPack = eligiableForPack;
