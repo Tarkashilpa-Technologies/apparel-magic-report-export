@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 const LastFetchedMetaData = new Schema(
   {
+    instanceName: { type: String, default: "" },
     pageSize: { type: String, default: "" },
     lastFetchedPagination: { type: String, default: "" },
     lastFetchedPickTicketIndex: { type: String, default: "" },

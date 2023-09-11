@@ -70,8 +70,10 @@ module.exports = {
   //     }
   //     client.close();
   //   },
-  apiStringWithEventTime: (endpoint, queryParam = "") => {
-    return `${pjson.env.baseUrl}/${endpoint}?time=${Date.now()}&token=${pjson.env.token}${queryParam}`;
+  apiStringWithEventTime: (endpoint, queryParam = "", instanceName) => {
+    const instanceObject = pjson.env?.instances?.find(instance => instance.name == instanceName);
+    console.log("ABCD", instanceObject, instanceName, `${instanceObject?.baseUrl}/${endpoint}?time=${Date.now()}&token=${instanceObject?.token}${queryParam}`)
+    return `${instanceObject?.baseUrl}/${endpoint}?time=${Date.now()}&token=${instanceObject?.token}${queryParam}`;
   },
   // cronJobSecond: cron.schedule("0 20 * * *", () => {
   //   convertToCsv(data)
