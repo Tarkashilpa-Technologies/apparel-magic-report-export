@@ -17,7 +17,7 @@ const { get } = require("lodash");
 let emailData = new Array();
 // module.exports = {
 const fetchCustomerRecords = async (customerId, element) => {
-  console.log("Fetching", element);
+  // console.log("Fetching", element);
   return new Promise((resolve) => {
     let apiString = apiStringWithEventTime("customers/" + customerId, "", element);
     // console.log("service call: ", apiString);
