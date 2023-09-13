@@ -52,7 +52,7 @@ const fetchRecords = async (pageSize = pjson.env.pageSize, currentPage = pjson.e
     // console.log("service call: ", apiString);
     axios.get(apiString).then(
       (response) => {
-        // console.log(apiString, response);
+        // console.log(apiString, response?.data);
         resolve(response?.data);
       },
       (error) => {
@@ -67,7 +67,8 @@ const createRecords = async (pageSize, element) => {
   let lastProcessData = await Database.LastFetchedMetaData.findOne({ instanceName: element?.name });
   let [recordId, lastPickTicketId, lastProcessedPickTicket] = ["", element?.dayZeroPickTicketId, ""];
   // Get data for Last fetched data from DB
-  if (null != lastProcessData && lastProcessData.length > 0) {
+  // console.log("lastProcessData details: ", lastProcessData, null != lastProcessData);
+  if (null != lastProcessData) {
     console.log("Pick Ticket configuration fetched from DB");
     recordId = lastProcessData._id;
     lastPickTicketId = lastProcessData?.lastFetchedPickTicketId;
@@ -156,10 +157,10 @@ const getWareHouseData = async (pickTicketData) => {
   let pickTicketItemData = {};
   const emailDataLength = emailData.length;
   for (item of pickTicketData?.pick_ticket_items) {
-    // console.log("upc code from pick ticket", item?.upc);
     let upcDataDB = await Database.WareHouseItem.find({
       UPC: item?.upc,
     });
+    // console.log("upc code from pick ticket", item?.upc, upcDataDB);
     if (upcDataDB.length > 0) {
       item.upcData = upcDataDB[0];
       let processUpcKey = `${upcDataDB[0]?.Style}_${upcDataDB[0]?.Color}`;
