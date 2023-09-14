@@ -46,7 +46,8 @@ const fetchRecords = async (pageSize = pjson.env.pageSize, currentPage = pjson.e
         "&parameters[0][field]=void&parameters[0][operator]==&parameters[0][value]=Not" +
         "&parameters[1][field]=pick_ticket_id&parameters[1][operator]=>&parameters[1][value]=" +
         startPickTicketId +
-        "&parameters[2][field]=warehouse_id&parameters[2][operator]==&parameters[2][value]=1",
+        "&parameters[2][field]=warehouse_id&parameters[2][include_type]=OR&parameters[2][value]=1" +
+        "&parameters[3][field]=warehouse_id&parameters[3][include_type]=OR&parameters[3][value]=4",
       element
     );
     // console.log("service call: ", apiString);
