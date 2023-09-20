@@ -3,20 +3,22 @@ const fs = require("fs");
 const pjson = require("./package.json");
 var nodemailer = require("nodemailer");
 module.exports = {
-  createDirectory: async (jsonData, filePrefix) => {
-    fs.access(pjson.env.csvLocation, function (error) {
-      if (error) {
-        console.log("Directory does not exist creating same.");
-        fs.mkdirSync(pjson.env.csvLocation, { recursive: true });
-      } else {
-        console.log("Directory location ", pjson.env.csvLocation, " exists.");
-      }
-    });
+  createDirectory: async () => {
+    for (element of pjson?.env?.instances) {
+      fs.access(element.csvLocation, function (error) {
+        if (error) {
+          console.log("Directory does not exist creating same.");
+          fs.mkdirSync(element.csvLocation, { recursive: true });
+        } else {
+          console.log("Directory location ", element.csvLocation, " exists.");
+        }
+      });
+    }
   },
-  convertToCsv: async (jsonData, filePrefix) => {
+  convertToCsv: async (jsonData, filePrefix, element) => {
     const csvData = json2csv(jsonData);
     return new Promise((resolve, reject) => {
-      fs.writeFile(`${pjson.env.csvLocation}/${filePrefix}_${Date.now()}.csv`, csvData, "utf8", (err) => {
+      fs.writeFile(`${element?.csvLocation}/${filePrefix}_${Date.now()}.csv`, csvData, "utf8", (err) => {
         if (err) {
           resolve({ msg: "error while creating csv file" });
           console.error("Error for convertToCsv: ", filePrefix);
@@ -75,8 +77,10 @@ module.exports = {
   //     }
   //     client.close();
   //   },
-  apiStringWithEventTime: (endpoint, queryParam = "") => {
-    return `${pjson.env.baseUrl}/${endpoint}?time=${Date.now()}&token=${pjson.env.token}${queryParam}`;
+  apiStringWithEventTime: (endpoint, queryParam = "", element) => {
+    // const instanceObject = pjson.env?.instances?.find(instance => instance.name == instanceName);
+    // console.log("ABCD", instanceObject, instanceName, `${instanceObject?.baseUrl}/${endpoint}?time=${Date.now()}&token=${instanceObject?.token}${queryParam}`)
+    return `${element?.baseUrl}/${endpoint}?time=${Date.now()}&token=${element?.token}${queryParam}`;
   },
   // cronJobSecond: cron.schedule("0 20 * * *", () => {
   //   convertToCsv(data)
@@ -92,7 +96,7 @@ module.exports = {
     // console.log("unprocessedData", unprocessedData);
     for (record of unprocessedData) {
       for (processedPickItemsValue of record?.pickTicketItemData?.processedPickItems) {
-        let r = record.country
+        let r = record.country;
         processedData.push({
           MessageSendingDate: "",
           AIMS360ClientCode: "MT",
@@ -131,7 +135,7 @@ module.exports = {
           BillTo_Country: "US", //record?.customerData?.country,
           BillTo_CountryCode: "US", //record?.customerData?.country,
           BillTo_State: record?.customerData?.state,
-          BillTo_Zip: record?.customerData?.postal_code.padStart(5, "0"),
+          BillTo_Zip: record?.customerData?.postal_code?.padStart(5, "0"),
           MarkFor_Email: "",
           MarkFor_MarkForCode: record?.ship_to_id,
           MarkFor_Name: record?.customerData?.first_name == null ? record?.customerData?.customer_name : record?.customerData?.first_name,
@@ -140,10 +144,10 @@ module.exports = {
           MarkFor_Address2: record?.address_2,
           MarkFor_Address3: "",
           MarkFor_City: record?.city,
-          MarkFor_Country: (r == "") || (r == "USA") || (r == undefined) ? "US" : r,
-          MarkFor_CountryCode: (r == "") || (r == "USA") || (r == undefined) ? "US" : r,
+          MarkFor_Country: r == "" || r == "USA" || r == undefined ? "US" : r,
+          MarkFor_CountryCode: r == "" || r == "USA" || r == undefined ? "US" : r,
           MarkFor_State: record?.state,
-          MarkFor_Zip: record?.postal_code.padStart(5, "0"),
+          MarkFor_Zip: record?.postal_code?.padStart(5, "0"),
           ShipTo_CompanyName: record?.ship_to_id,
           ShipTo_DCNo: "",
           ShipTo_Email: record?.customerData?.email,
@@ -156,10 +160,10 @@ module.exports = {
           ShipTo_Address2: record?.address_2,
           ShipTo_Address3: "",
           ShipTo_City: record?.city,
-          ShipTo_Country: (r == "") || (r == "USA") || (r == undefined) ? "US" : r,
-          ShipTo_CountryCode: (r == "") || (r == "USA") || (r == undefined) ? "US" : r,
+          ShipTo_Country: r == "" || r == "USA" || r == undefined ? "US" : r,
+          ShipTo_CountryCode: r == "" || r == "USA" || r == undefined ? "US" : r,
           ShipTo_State: record?.state,
-          ShipTo_Zip: record?.postal_code.padStart(5, "0"),
+          ShipTo_Zip: record?.postal_code?.padStart(5, "0"),
           ShipVia_Account: "",
           ShipVia_AccountZip: "",
           ShipVia_BillingCode: record?.shipping_terms_id,
@@ -187,11 +191,11 @@ module.exports = {
     return processedData;
   },
   // create reusable transporter object using the default SMTP transport
-  sendEmail: (body, emailTo = pjson.env.emailTo, subject = pjson.env.emailSubject) => {
+  sendEmail: (body, emailTo = pjson.env.emailTo, subject = pjson.env.emailSubject, element) => {
     const mailData = {
       from: pjson.env.emailFrom, // sender address
       to: emailTo, // list of receivers
-      subject: subject,
+      subject: subject + " for instance " + element?.name,
       text: body,
       html: body,
     };

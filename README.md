@@ -1,5 +1,7 @@
 # apparel-magic-report-export
+
 While importing **WareHouseItem** in Mongo below fields should be **String**
+
 - Style
 - Color
 - Size
@@ -8,3 +10,6 @@ While importing **WareHouseItem** in Mongo below fields should be **String**
 - Prepack Size Name
 - Division
 - UOM
+
+**Build and Run project**
+node app.js

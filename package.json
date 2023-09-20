@@ -43,11 +43,11 @@
     "//user": "dlpuser",
     "//password": "rNrKYTX9g7z3RgJRmxWuGHbeu",
     "//secure": false,
-    "csvLocation": "D:/Excenta/EDI/MT/Inbound",
-    "filenamePrefix": "AIMS940",
-    "dayZeroPickTicketId": "14020",
-    "baseUrl": "https://lcr-black-edition.app.apparelmagic.com/api/json",
-    "token": "4bd4c51e72757fa3dc41f72b1eb7487f",
+    "//csvLocation": "D:/Excenta/EDI/MT/Inbound",
+    "//filenamePrefix": "AIMS940",
+    "//dayZeroPickTicketId": "14200",
+    "//baseUrl": "https://lcr-black-edition.app.apparelmagic.com/api/json",
+    "//token": "4bd4c51e72757fa3dc41f72b1eb7487f",
     "pageSize": 100,
     "currentPage": 1,
     "cronSchedule": "* * * * *",
@@ -60,6 +60,24 @@
     "emailPassword": "",
     "emailSubject": "Test mail from App",
     "emailTo": "harsh.gupta2205@gmail.com",
-    "enableEmail": false
+    "enableEmail": false,
+    "instances": [
+      {
+        "name": "Instance2",
+        "baseUrl": "https://mizumi.app.apparelmagic.com/api/json",
+        "token": "de7508faeb0e6aae605c5498230e980d",
+        "filenamePrefix": "AIMS940",
+        "dayZeroPickTicketId": "2800",
+        "csvLocation": "D:/Excenta/EDI/MT/Inbound"
+      },
+      {
+        "name": "Instance1",
+        "baseUrl": "https://lcr-black-edition.app.apparelmagic.com/api/json",
+        "token": "4bd4c51e72757fa3dc41f72b1eb7487f",
+        "filenamePrefix": "AIMS940",
+        "dayZeroPickTicketId": "14330",
+        "csvLocation": "D:/Excenta/EDI/MT/Inbound"
+      }
+    ]
   }
 }
