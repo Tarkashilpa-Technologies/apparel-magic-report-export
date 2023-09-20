@@ -1,4 +1,4 @@
-const { apiStringWithEventTime, filterDataForCSV, convertToCsv, sendEmail } = require("../utils");
+const { apiStringWithEventTime, filterDataForCSV, convertToCsv, sendEmail, asyncForEach } = require("../utils");
 const axios = require("axios");
 const pjson = require("../package.json");
 const flatten = require("flat");
@@ -7,6 +7,7 @@ const Database = require("../Database");
 const cron = require("node-cron");
 const dbUrl = pjson.env.mongooseUrl;
 const { get } = require("lodash");
+const winston = require('../logging');
 
 let emailData = new Array();
 // module.exports = {
@@ -37,7 +38,8 @@ const fetchRecords = async (pageSize = pjson.env.pageSize, currentPage = pjson.e
         pageSize +
         "&parameters[0][field]=void&parameters[0][operator]==&parameters[0][value]=Not" +
         "&parameters[1][field]=pick_ticket_id&parameters[1][operator]=>&parameters[1][value]=" +
-        startPickTicketId
+        startPickTicketId +
+        "&parameters[2][field]=warehouse_id&parameters[2][operator]==&parameters[2][value]=1"
     );
     // console.log("service call: ", apiString);
     axios.get(apiString).then(
@@ -97,7 +99,7 @@ const createBatchRecords = async (pageSize, currentPage, lastPickTicketId) => {
   emailData = new Array();
   let unprocessedData = await fetchRecords(pageSize, currentPage, lastPickTicketId);
   let [filePrefix, endPickId] = [pjson.env.filenamePrefix + "_" + unprocessedData?.response[0]?.pick_ticket_id, lastPickTicketId];
-  console.log("Fetching data from Pick Ticket: ", lastPickTicketId);
+  winston.info("Fetching data from Pick Ticket: ", lastPickTicketId);
   for (let [index, pickTicket] of unprocessedData?.response?.entries()) {
     console.log("Customer Id: ", pickTicket.customer_id, " of Pick Ticket: ", pickTicket.pick_ticket_id);
     // Get Customer data
@@ -120,14 +122,14 @@ const createBatchRecords = async (pageSize, currentPage, lastPickTicketId) => {
     }
     await getWareHouseData(pickTicket);
   }
-  console.log("Data fetched till Pick Ticket: ", endPickId);
+  winston.info("Data fetched till Pick Ticket: ", endPickId);
   //Processing of the data
   let processedData = Object.values(filterDataForCSV(unprocessedData?.response)).map((obj) => flatten(obj));
-  console.log("Filter and process complete for ", processedData.length, " records");
+  winston.info("Filter and process complete for ", processedData.length, " records");
   //CSV creation
   if (processedData.length != 0) {
     convertToCsv(processedData, `${filePrefix}_${endPickId}`);
-    console.log("CSV created with prefix: ", `${filePrefix}_${endPickId}`);
+    winston.info("CSV created with prefix: ", `${filePrefix}_${endPickId}`);
   }
   if (emailData.length != 0 && pjson.env.enableEmail) {
     sendEmail(emailData.join("<br/>"));
@@ -247,7 +249,7 @@ const initDatabase = () => {
     .connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
       console.log(`connected with DB`);
-      cronJob.start();
+      // cronJob.start();
     })
     .catch((err) => console.log(err));
 };
@@ -267,4 +269,133 @@ const getShipInfo = async (shipId) => {
     resolve(ExentaShipViaCode);
   });
 };
-module.exports = { initDatabase, createRecords };
+
+// const createRecordOnArray = async (request) => {
+//   console.log(request.body)
+//   const {pickTickets} = request.body
+//   let requestArray =[]
+//     let records = await asyncForEach(pickTickets, async (pt) =>{
+//       let apiString = apiStringWithEventTime("pick_tickets/" + pt);
+//       let response = await axios.get(apiString).then(
+//         (response) => {
+//           // console.log(response?.data?.response?.[0])
+//           requestArray.push(response?.data?.response?.[0]);
+//           return response;
+//         },
+//         (error) => {
+//           console.error("Error for fetchCustomerRecords: ", customerId);
+//           console.log("Error details: ", error);
+//         }
+//       );
+//     })
+//     // console.log("array", requestArray);
+//     for (let pickTicket of requestArray) {
+//       console.log("Customer Id: ", pickTicket.customer_id, " of Pick Ticket: ", pickTicket.pick_ticket_id);
+      
+//       // Get Customer data
+//       await fetchCustomerRecords(pickTicket.customer_id)
+//         .then((customerResponse) => {
+//           pickTicket.customerData = customerResponse;
+//         })
+//         .catch((err) => {
+//           console.log(err);
+//           console.error("error for fetchCustomerRecords: ", pickTicket.customer_id);
+//         });
+//       // endPickId = pickTicket.pick_ticket_id;
+//       // Get warehouse data from DB
+//       if (pickTicket?.ship_via && !isNaN?.(pickTicket?.ship_via)) {
+//         console.log("fetching shipping info for ship via", pickTicket?.ship_via);
+//         await getShipInfo(pickTicket.ship_via).then((shipInfo) => {
+//           console.log("fetched shipinfo as ", shipInfo);
+//           pickTicket.ExentaShipViaCode = shipInfo;
+//         });
+//       }
+//       await getWareHouseData(pickTicket);
+//     }
+//     console.log("array2", requestArray);
+
+//     // winston.info("Data fetched till Pick Ticket: ", endPickId);
+//     //Processing of the data
+//     let processedData = Object.values(filterDataForCSV(requestArray)).map((obj) => flatten(obj));
+//     winston.info("Filter and process complete for ", processedData.length, " records");
+//     //CSV creation
+//     console.log("HEYY", processedData)
+//     if (processedData.length != 0) {
+//       let lastElement = requestArray.length - 1;
+//       let [filePrefix, endPickId] = [pjson.env.filenamePrefix + "_" + requestArray?.[0]?.pick_ticket_id, requestArray?.[lastElement]?.pick_ticket_id];
+//       convertToCsv(processedData, `${filePrefix}_${endPickId}`);
+//       winston.info("CSV created with prefix: ", `${filePrefix}_${endPickId}`);
+//       return (`CSV created : ${filePrefix}_${endPickId}`);
+//     } else{
+//       return (`Error: No File created, Please check log file for errors`);
+
+//     }
+// };
+
+const createRecordOnArray = async (request) => {
+  try {
+    console.log(request.body);
+    const { pickTickets } = request.body;
+    const requestArray = [];
+
+    // Fetch data for each pick ticket in parallel
+    await Promise.all(
+      pickTickets.map(async (pt) => {
+        const apiString = apiStringWithEventTime(`pick_tickets/${pt}`);
+        const response = await axios.get(apiString);
+
+        if (response?.data?.response?.[0]) {
+          requestArray.push(response.data.response[0]);
+        } else {
+          console.error(`No response data for pick_ticket_id: ${pt}`);
+        }
+      })
+    );
+
+    // Process data for each pick ticket
+    for (const pickTicket of requestArray) {
+      console.log(`Customer Id: ${pickTicket.customer_id} of Pick Ticket: ${pickTicket.pick_ticket_id}`);
+      
+      // Get Customer data
+      try {
+        const customerResponse = await fetchCustomerRecords(pickTicket.customer_id);
+        pickTicket.customerData = customerResponse;
+      } catch (err) {
+        console.error(err);
+        console.error(`Error fetching customer records for customer_id: ${pickTicket.customer_id}`);
+      }
+
+      // Get warehouse data from DB
+      if (pickTicket.ship_via && !isNaN(pickTicket.ship_via)) {
+        console.log(`Fetching shipping info for ship via ${pickTicket.ship_via}`);
+        const shipInfo = await getShipInfo(pickTicket.ship_via);
+        console.log(`Fetched shipinfo as: ${shipInfo}`);
+        pickTicket.ExentaShipViaCode = shipInfo;
+      }
+
+      await getWareHouseData(pickTicket);
+    }
+
+    // Filter and process the data
+    const processedData = Object.values(filterDataForCSV(requestArray)).map((obj) => flatten(obj));
+    console.log("Processed Data:", processedData);
+
+    if (processedData.length !== 0) {
+      const lastElement = requestArray[requestArray.length - 1];
+      const filePrefix = `${pjson.env.filenamePrefix}_${requestArray[0].pick_ticket_id}_${lastElement.pick_ticket_id}`;
+      
+      // CSV creation
+      convertToCsv(processedData, filePrefix);
+      console.log(`CSV created with prefix: ${filePrefix}`);
+      return `CSV created: ${filePrefix}`;
+    } else {
+      return "Error: No file created. Please check log file for errors.";
+    }
+  } catch (error) {
+    console.error("An error occurred:", error);
+    return "An error occurred. Please check the server logs.";
+  }
+};
+
+
+module.exports = { initDatabase, createRecords, createRecordOnArray };

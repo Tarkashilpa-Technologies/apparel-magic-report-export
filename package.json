@@ -18,19 +18,23 @@
   },
   "homepage": "https://github.com/Tarkashilpa-Technologies/apparel-magic-report-export#readme",
   "dependencies": {
+    "app-root-path": "^3.1.0",
     "axios": "^1.4.0",
     "basic-ftp": "^5.0.3",
     "body-parser": "^1.20.2",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "flat": "^5.0.2",
     "fs": "0.0.1-security",
     "json2csv": "^6.0.0-alpha.2",
     "lodash": "^4.17.21",
     "mongoose": "^7.3.1",
+    "morgan": "^1.10.0",
     "node-cron": "^3.0.2",
     "nodemailer": "^6.9.3",
     "nodemon": "^2.0.22",
-    "ssh2-sftp-client": "^9.1.0"
+    "ssh2-sftp-client": "^9.1.0",
+    "winston": "^3.10.0"
   },
   "description": "",
   "env": {
@@ -49,7 +53,7 @@
     "cronSchedule": "* * * * *",
     "//cronSchedule": "0 7-20/2 * * *",
     "//mongooseUrl": "mongodb://0.0.0.0:27017/apperalMagic?retryWrites=true&w=majority",
-    "mongooseUrl": "mongodb+srv://navaltk:Fzbpv2A3UFAM19Kt@cluster0.dokdtz4.mongodb.net/?retryWrites=true&w=majority",
+    "mongooseUrl": "mongodb+srv://navaltk:Fzbpv2A3UFAM19Kt@cluster0.dokdtz4.mongodb.net/apperalMagic?retryWrites=true&w=majority",
     "emailFrom": "harshgupta2205@gmail.com",
     "emailHost": "smtp.gmail.com",
     "emailUsername": "harshgupta2205@gmail.com",
