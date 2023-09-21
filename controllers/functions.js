@@ -275,13 +275,16 @@ const initDatabase = () => {
     })
     .catch((err) => console.log(err));
 };
-const cronJob = cron.schedule(pjson.env.cronSchedule, () => {
-  console.log("########### Schedule start at ", new Date(), "###########");
+const initFetchRecords = async () => {
   let [pageSize] = [pjson.env.pageSize];
   for (element of pjson?.env?.instances) {
     let processedData = createRecords(pageSize, element);
     // console.log("processing complete for instance: ", element?.name);
   }
+};
+const cronJob = cron.schedule(pjson.env.cronSchedule, () => {
+  console.log("########### Schedule start at ", new Date(), "###########");
+  initFetchRecords();
   // let processedData = asyncForEach(pjson?.env?.instances, async (element) => {
   //   let [pageSize, currentPage] = [pjson.env.pageSize, pjson.env.currentPage];
   //   let processedData = createRecords(pageSize, element?.name ,currentPage );
@@ -431,4 +434,4 @@ const createRecordOnArray = async (request) => {
   }
 };
 
-module.exports = { initDatabase, createRecords, createRecordOnArray };
+module.exports = { initDatabase, createRecords, createRecordOnArray, initFetchRecords };
