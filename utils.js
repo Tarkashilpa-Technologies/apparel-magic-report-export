@@ -96,7 +96,7 @@ module.exports = {
     // console.log("unprocessedData", unprocessedData);
     for (record of unprocessedData) {
       for (processedPickItemsValue of record?.pickTicketItemData?.processedPickItems) {
-        let r = record.country;
+        let r = record.country
         processedData.push({
           MessageSendingDate: "",
           AIMS360ClientCode: "MT",
@@ -135,7 +135,7 @@ module.exports = {
           BillTo_Country: "US", //record?.customerData?.country,
           BillTo_CountryCode: "US", //record?.customerData?.country,
           BillTo_State: record?.customerData?.state,
-          BillTo_Zip: record?.customerData?.postal_code?.padStart(5, "0"),
+          BillTo_Zip: record?.customerData?.postal_code.padStart(5, "0"),
           MarkFor_Email: "",
           MarkFor_MarkForCode: record?.ship_to_id,
           MarkFor_Name: record?.customerData?.first_name == null ? record?.customerData?.customer_name : record?.customerData?.first_name,
@@ -144,10 +144,10 @@ module.exports = {
           MarkFor_Address2: record?.address_2,
           MarkFor_Address3: "",
           MarkFor_City: record?.city,
-          MarkFor_Country: r == "" || r == "USA" || r == undefined ? "US" : r,
-          MarkFor_CountryCode: r == "" || r == "USA" || r == undefined ? "US" : r,
+          MarkFor_Country: (r == "") || (r == "USA") || (r == undefined) ? "US" : r,
+          MarkFor_CountryCode: (r == "") || (r == "USA") || (r == undefined) ? "US" : r,
           MarkFor_State: record?.state,
-          MarkFor_Zip: record?.postal_code?.padStart(5, "0"),
+          MarkFor_Zip: record?.postal_code.padStart(5, "0"),
           ShipTo_CompanyName: record?.ship_to_id,
           ShipTo_DCNo: "",
           ShipTo_Email: record?.customerData?.email,
@@ -160,10 +160,10 @@ module.exports = {
           ShipTo_Address2: record?.address_2,
           ShipTo_Address3: "",
           ShipTo_City: record?.city,
-          ShipTo_Country: r == "" || r == "USA" || r == undefined ? "US" : r,
-          ShipTo_CountryCode: r == "" || r == "USA" || r == undefined ? "US" : r,
+          ShipTo_Country: (r == "") || (r == "USA") || (r == undefined) ? "US" : r,
+          ShipTo_CountryCode: (r == "") || (r == "USA") || (r == undefined) ? "US" : r,
           ShipTo_State: record?.state,
-          ShipTo_Zip: record?.postal_code?.padStart(5, "0"),
+          ShipTo_Zip: record?.postal_code.padStart(5, "0"),
           ShipVia_Account: "",
           ShipVia_AccountZip: "",
           ShipVia_BillingCode: record?.shipping_terms_id,
