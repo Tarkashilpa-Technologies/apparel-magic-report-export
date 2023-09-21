@@ -30,6 +30,11 @@ module.exports = {
       });
     });
   },
+  asyncForEach :async (array, callback) => {
+    for (let index = 0; index < array.length; index++) {
+      await callback(array[index], index, array);
+    }
+  },
   // updateCofiguration: async (jsonData) => {
   //   // const csvData = json2csv(jsonData);
   //   return new Promise((resolve, reject) => {
@@ -179,7 +184,7 @@ module.exports = {
           Item_UOM: processedPickItemsValue?.Item_UOM,
           Item_UPC: processedPickItemsValue?.Item_UPC,
           Item_Notes: processedPickItemsValue.notes, // No detail available
-          Notes: record?.shipping_info, // No detail available
+          Notes: record?.shipping_info,
         });
       }
     }
