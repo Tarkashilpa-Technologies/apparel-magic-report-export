@@ -43,23 +43,22 @@
     "//user": "dlpuser",
     "//password": "rNrKYTX9g7z3RgJRmxWuGHbeu",
     "//secure": false,
-    "//csvLocation": "D:/Excenta/EDI/MT/Inbound",
     "//filenamePrefix": "AIMS940",
     "//dayZeroPickTicketId": "14200",
     "//baseUrl": "https://lcr-black-edition.app.apparelmagic.com/api/json",
     "//token": "4bd4c51e72757fa3dc41f72b1eb7487f",
     "pageSize": 100,
     "currentPage": 1,
-    "cronSchedule": "* * * * *",
-    "//cronSchedule": "0 7-20/2 * * *",
-    "//mongooseUrl": "mongodb://0.0.0.0:27017/apperalMagic?retryWrites=true&w=majority",
+    "//cronSchedule": "* * * * *",
+    "cronSchedule": "0 7-20/2 * * *",
     "mongooseUrl": "mongodb+srv://navaltk:Fzbpv2A3UFAM19Kt@cluster0.dokdtz4.mongodb.net/apperalMagic?retryWrites=true&w=majority",
-    "emailFrom": "harshgupta2205@gmail.com",
-    "emailHost": "smtp.gmail.com",
-    "emailUsername": "harshgupta2205@gmail.com",
+    "//mongooseUrl": "mongodb://0.0.0.0:27017/apperalMagic?retryWrites=true&w=majority",
+    "emailFrom": "",
+    "emailHost": "",
+    "emailUsername": "",
     "emailPassword": "",
-    "emailSubject": "Test mail from App",
-    "emailTo": "harsh.gupta2205@gmail.com",
+    "emailSubject": "",
+    "emailTo": "",
     "enableEmail": false,
     "instances": [
       {
@@ -68,7 +67,7 @@
         "token": "de7508faeb0e6aae605c5498230e980d",
         "filenamePrefix": "AIMS940",
         "dayZeroPickTicketId": "2800",
-        "csvLocation": "D:/Excenta/EDI/MT/Inbound"
+        "csvLocation": "D:/Exenta/EDI/MT/Inbound"
       },
       {
         "name": "Instance1",
@@ -76,7 +75,7 @@
         "token": "4bd4c51e72757fa3dc41f72b1eb7487f",
         "filenamePrefix": "AIMS940",
         "dayZeroPickTicketId": "14330",
-        "csvLocation": "D:/Excenta/EDI/MT/Inbound"
+        "csvLocation": "D:/Exenta/EDI/MT/Inbound"
       }
     ]
   }

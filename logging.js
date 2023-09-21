@@ -12,12 +12,21 @@ const options = {
     maxsize: 5242880, // 5MB
     maxFiles: 5,
     colorize: true,
+    format: winston.format.combine(
+      winston.format.timestamp(),
+      winston.format.json()
+    ),
   },
   console: {
     level: 'debug',
     handleExceptions: true,
     json: true,
     colorize: true,
+    format: winston.format.combine(
+      winston.format.timestamp(),
+      winston.format.colorize(),
+      winston.format.simple()
+    ),
   },
 };
 

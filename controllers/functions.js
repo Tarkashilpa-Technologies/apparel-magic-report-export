@@ -139,14 +139,14 @@ const createBatchRecords = async (pageSize, currentPage, lastPickTicketId, eleme
     }
     await getWareHouseData(pickTicket);
   }
-  winston.info("Data fetched till Pick Ticket: ", endPickId);
+  winston.info(`Data fetched till Pick Ticket: , ${endPickId}`);
   //Processing of the data
   let processedData = Object.values(filterDataForCSV(unprocessedData?.response)).map((obj) => flatten(obj));
-  winston.info("Filter and process complete for ", processedData.length, " records");
+  winston.info(`Filter and process complete for, ${processedData.length}, records`);
   //CSV creation
   if (processedData.length != 0) {
     convertToCsv(processedData, `${filePrefix}_${endPickId}`, element);
-    console.log("CSV created with prefix: ", `${filePrefix}_${endPickId}`);
+    winston.info(`CSV created with prefix:, ${filePrefix}_${endPickId}`);
   }
   if (emailData.length != 0 && pjson.env.enableEmail) {
     sendEmail(emailData.join("<br/>"), element);
@@ -283,7 +283,7 @@ const initFetchRecords = async () => {
   }
 };
 const cronJob = cron.schedule(pjson.env.cronSchedule, () => {
-  console.log("########### Schedule start at ", new Date(), "###########");
+  winston.info(`########### Schedule start at ", ${new Date()}, "###########`);
   initFetchRecords();
   // let processedData = asyncForEach(pjson?.env?.instances, async (element) => {
   //   let [pageSize, currentPage] = [pjson.env.pageSize, pjson.env.currentPage];
@@ -302,68 +302,6 @@ const getShipInfo = async (shipId) => {
     resolve(ExentaShipViaCode);
   });
 };
-
-// const createRecordOnArray = async (request) => {
-//   console.log(request.body)
-//   const {pickTickets} = request.body
-//   let requestArray =[]
-//     let records = await asyncForEach(pickTickets, async (pt) =>{
-//       let apiString = apiStringWithEventTime("pick_tickets/" + pt);
-//       let response = await axios.get(apiString).then(
-//         (response) => {
-//           // console.log(response?.data?.response?.[0])
-//           requestArray.push(response?.data?.response?.[0]);
-//           return response;
-//         },
-//         (error) => {
-//           console.error("Error for fetchCustomerRecords: ", customerId);
-//           console.log("Error details: ", error);
-//         }
-//       );
-//     })
-//     // console.log("array", requestArray);
-//     for (let pickTicket of requestArray) {
-//       console.log("Customer Id: ", pickTicket.customer_id, " of Pick Ticket: ", pickTicket.pick_ticket_id);
-
-//       // Get Customer data
-//       await fetchCustomerRecords(pickTicket.customer_id)
-//         .then((customerResponse) => {
-//           pickTicket.customerData = customerResponse;
-//         })
-//         .catch((err) => {
-//           console.log(err);
-//           console.error("error for fetchCustomerRecords: ", pickTicket.customer_id);
-//         });
-//       // endPickId = pickTicket.pick_ticket_id;
-//       // Get warehouse data from DB
-//       if (pickTicket?.ship_via && !isNaN?.(pickTicket?.ship_via)) {
-//         console.log("fetching shipping info for ship via", pickTicket?.ship_via);
-//         await getShipInfo(pickTicket.ship_via).then((shipInfo) => {
-//           console.log("fetched shipinfo as ", shipInfo);
-//           pickTicket.ExentaShipViaCode = shipInfo;
-//         });
-//       }
-//       await getWareHouseData(pickTicket);
-//     }
-//     console.log("array2", requestArray);
-
-//     // winston.info("Data fetched till Pick Ticket: ", endPickId);
-//     //Processing of the data
-//     let processedData = Object.values(filterDataForCSV(requestArray)).map((obj) => flatten(obj));
-//     winston.info("Filter and process complete for ", processedData.length, " records");
-//     //CSV creation
-//     console.log("HEYY", processedData)
-//     if (processedData.length != 0) {
-//       let lastElement = requestArray.length - 1;
-//       let [filePrefix, endPickId] = [pjson.env.filenamePrefix + "_" + requestArray?.[0]?.pick_ticket_id, requestArray?.[lastElement]?.pick_ticket_id];
-//       convertToCsv(processedData, `${filePrefix}_${endPickId}`);
-//       winston.info("CSV created with prefix: ", `${filePrefix}_${endPickId}`);
-//       return (`CSV created : ${filePrefix}_${endPickId}`);
-//     } else{
-//       return (`Error: No File created, Please check log file for errors`);
-
-//     }
-// };
 
 const createRecordOnArray = async (request) => {
   try {
@@ -385,7 +323,7 @@ const createRecordOnArray = async (request) => {
         if (response?.data?.response?.[0]) {
           requestArray.push(response.data.response[0]);
         } else {
-          console.error(`No response data for pick_ticket_id: ${pt}, response: `, response.data);
+          winston.info(`No response data for pick_ticket_id: ${pt}, response: `, response.data);
         }
       })
     );
@@ -399,7 +337,7 @@ const createRecordOnArray = async (request) => {
         pickTicket.customerData = customerResponse;
       } catch (err) {
         console.error(err);
-        console.error(`Error fetching customer records for customer_id: ${pickTicket.customer_id}`);
+        winston.info(`Error fetching customer records for customer_id: ${pickTicket.customer_id}`);
       }
 
       // Get warehouse data from DB
@@ -423,13 +361,13 @@ const createRecordOnArray = async (request) => {
 
       // CSV creation
       convertToCsv(processedData, filePrefix, instanceElement);
-      console.log(`CSV created with prefix: ${filePrefix}`);
+      winston.info(`CSV created with prefix: ${filePrefix}`);
       return `CSV created: ${filePrefix}`;
     } else {
       return "Error: No file created. Please check log file for errors.";
     }
   } catch (error) {
-    console.error("An error occurred:", error);
+    winston.info("An error occurred:", error);
     return "An error occurred. Please check the server logs.";
   }
 };
