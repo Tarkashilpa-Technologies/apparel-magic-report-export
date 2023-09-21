@@ -7,7 +7,7 @@ const Database = require("../Database");
 const cron = require("node-cron");
 const dbUrl = pjson.env.mongooseUrl;
 const { get } = require("lodash");
-const winston = require('../logging');
+const winston = require("../logging");
 
 // const asyncForEach = async (array, callback) => {
 //   for (let index = 0; index < array.length; index++) {
@@ -321,7 +321,7 @@ const getShipInfo = async (shipId) => {
 //     // console.log("array", requestArray);
 //     for (let pickTicket of requestArray) {
 //       console.log("Customer Id: ", pickTicket.customer_id, " of Pick Ticket: ", pickTicket.pick_ticket_id);
-      
+
 //       // Get Customer data
 //       await fetchCustomerRecords(pickTicket.customer_id)
 //         .then((customerResponse) => {
@@ -365,19 +365,24 @@ const getShipInfo = async (shipId) => {
 const createRecordOnArray = async (request) => {
   try {
     console.log(request.body);
-    const { pickTickets } = request.body;
+    const { pickTickets, instance } = request.body;
     const requestArray = [];
-
+    let instanceElement = {};
+    for (element of pjson?.env?.instances) {
+      if (element?.name.toUpperCase() == instance.toUpperCase()) {
+        instanceElement = element;
+      }
+    }
     // Fetch data for each pick ticket in parallel
     await Promise.all(
       pickTickets.map(async (pt) => {
-        const apiString = apiStringWithEventTime(`pick_tickets/${pt}`);
+        const apiString = apiStringWithEventTime(`pick_tickets/${pt}`, "", instanceElement);
+        // console.log("apiString", apiString);
         const response = await axios.get(apiString);
-
         if (response?.data?.response?.[0]) {
           requestArray.push(response.data.response[0]);
         } else {
-          console.error(`No response data for pick_ticket_id: ${pt}`);
+          console.error(`No response data for pick_ticket_id: ${pt}, response: `, response.data);
         }
       })
     );
@@ -385,10 +390,9 @@ const createRecordOnArray = async (request) => {
     // Process data for each pick ticket
     for (const pickTicket of requestArray) {
       console.log(`Customer Id: ${pickTicket.customer_id} of Pick Ticket: ${pickTicket.pick_ticket_id}`);
-      
       // Get Customer data
       try {
-        const customerResponse = await fetchCustomerRecords(pickTicket.customer_id);
+        const customerResponse = await fetchCustomerRecords(pickTicket.customer_id, instanceElement);
         pickTicket.customerData = customerResponse;
       } catch (err) {
         console.error(err);
@@ -397,9 +401,9 @@ const createRecordOnArray = async (request) => {
 
       // Get warehouse data from DB
       if (pickTicket.ship_via && !isNaN(pickTicket.ship_via)) {
-        console.log(`Fetching shipping info for ship via ${pickTicket.ship_via}`);
+        // console.log(`Fetching shipping info for ship via ${pickTicket.ship_via}`);
         const shipInfo = await getShipInfo(pickTicket.ship_via);
-        console.log(`Fetched shipinfo as: ${shipInfo}`);
+        // console.log(`Fetched shipinfo as: ${shipInfo}`);
         pickTicket.ExentaShipViaCode = shipInfo;
       }
 
@@ -408,14 +412,14 @@ const createRecordOnArray = async (request) => {
 
     // Filter and process the data
     const processedData = Object.values(filterDataForCSV(requestArray)).map((obj) => flatten(obj));
-    console.log("Processed Data:", processedData);
+    // console.log("Processed Data:", processedData);
 
     if (processedData.length !== 0) {
       const lastElement = requestArray[requestArray.length - 1];
-      const filePrefix = `${pjson.env.filenamePrefix}_${requestArray[0].pick_ticket_id}_${lastElement.pick_ticket_id}`;
-      
+      const filePrefix = `${instanceElement.filenamePrefix}_${instanceElement.name}_${requestArray[0].pick_ticket_id}_${lastElement.pick_ticket_id}`;
+
       // CSV creation
-      convertToCsv(processedData, filePrefix);
+      convertToCsv(processedData, filePrefix, instanceElement);
       console.log(`CSV created with prefix: ${filePrefix}`);
       return `CSV created: ${filePrefix}`;
     } else {
@@ -426,6 +430,5 @@ const createRecordOnArray = async (request) => {
     return "An error occurred. Please check the server logs.";
   }
 };
-
 
 module.exports = { initDatabase, createRecords, createRecordOnArray };
