@@ -16,6 +16,7 @@ const winston = require("../logging");
 // };
 
 let emailData = new Array();
+let isBatchActive = false;
 // module.exports = {
 const fetchCustomerRecords = async (customerId, element) => {
   // console.log("Fetching", element);
@@ -37,7 +38,7 @@ const fetchRecords = async (pageSize = pjson.env.pageSize, currentPage = pjson.e
   return new Promise((resolve) => {
     // console.log("fetchRecords lastPickTicketId", lastPickTicketId);
     console.log("fetchRecords lastPickTicketId", element?.name);
-    let startPickTicketId = parseInt(lastPickTicketId) + 1;
+    let startPickTicketId = parseInt(lastPickTicketId);
     let apiString = apiStringWithEventTime(
       "pick_tickets/",
       "&pagination[page_number]=" +
@@ -71,7 +72,7 @@ const createRecords = async (pageSize, element) => {
   // Get data for Last fetched data from DB
   // console.log("lastProcessData details: ", lastProcessData, null != lastProcessData);
   if (null != lastProcessData) {
-    console.log("Pick Ticket configuration fetched from DB");
+    console.log("Pick Ticket configuration fetched from DB: ", lastProcessData);
     recordId = lastProcessData._id;
     lastPickTicketId = lastProcessData?.lastFetchedPickTicketId;
   }
@@ -277,9 +278,16 @@ const initDatabase = () => {
 };
 const initFetchRecords = async () => {
   let [pageSize] = [pjson.env.pageSize];
-  for (element of pjson?.env?.instances) {
-    let processedData = createRecords(pageSize, element);
-    // console.log("processing complete for instance: ", element?.name);
+  if (!isBatchActive) {
+    isBatchActive = true;
+    for (element of pjson?.env?.instances) {
+      let processedData = await createRecords(pageSize, element);
+      console.log("processing complete for instance: ", element?.name);
+    }
+    isBatchActive = false;
+    winston.info(`########### Processing end at ", ${new Date()}, "###########`);
+  } else {
+    winston.info(`########### Skipping Schedule/process as one is already active at ", ${new Date()}, "###########`);
   }
 };
 const cronJob = cron.schedule(pjson.env.cronSchedule, () => {
@@ -357,7 +365,7 @@ const createRecordOnArray = async (request) => {
 
     if (processedData.length !== 0) {
       const lastElement = requestArray[requestArray.length - 1];
-      const filePrefix = `${instanceElement.filenamePrefix}_${instanceElement.name}_${requestArray[0].pick_ticket_id}_${lastElement.pick_ticket_id}`;
+      const filePrefix = `${instanceElement.filenamePrefix}_${instanceElement.name}_${new Date().toJSON().slice(0, 10)}`;
 
       // CSV creation
       convertToCsv(processedData, filePrefix, instanceElement);
