@@ -133,7 +133,7 @@ const createBatchRecords = async (pageSize, currentPage, lastPickTicketId, eleme
     //Get warehouse data from DB
     if (pickTicket?.ship_via && !isNaN?.(pickTicket?.ship_via)) {
       console.log("fetching shipping info for ship via", pickTicket?.ship_via);
-      await getShipInfo(pickTicket.ship_via).then((shipInfo) => {
+      await getShipInfo(pickTicket.ship_via, element).then((shipInfo) => {
         console.log("fetched shipinfo as ", shipInfo);
         pickTicket.ExentaShipViaCode = shipInfo;
       });
@@ -301,10 +301,11 @@ const cronJob = cron.schedule(pjson.env.cronSchedule, () => {
   // console.log("########### Schedule end at ", Date.now().toString(), "###########");
   // console.log("Cron end with", processedData);
 });
-const getShipInfo = async (shipId) => {
+const getShipInfo = async (shipId, element) => {
   return new Promise(async (resolve) => {
     let shipInfoData = await Database.ShipInfo.findOne({
       shipId: parseInt(shipId),
+      instanceName: element?.name,
     });
     let ExentaShipViaCode = get(shipInfoData, "ExentaShipViaCode", "");
     resolve(ExentaShipViaCode);
@@ -351,7 +352,7 @@ const createRecordOnArray = async (request) => {
       // Get warehouse data from DB
       if (pickTicket.ship_via && !isNaN(pickTicket.ship_via)) {
         // console.log(`Fetching shipping info for ship via ${pickTicket.ship_via}`);
-        const shipInfo = await getShipInfo(pickTicket.ship_via);
+        const shipInfo = await getShipInfo(pickTicket.ship_via, instanceElement);
         // console.log(`Fetched shipinfo as: ${shipInfo}`);
         pickTicket.ExentaShipViaCode = shipInfo;
       }
