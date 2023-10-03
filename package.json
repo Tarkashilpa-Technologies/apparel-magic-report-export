@@ -67,7 +67,7 @@
         "token": "de7508faeb0e6aae605c5498230e980d",
         "filenamePrefix": "AIMS940",
         "dayZeroPickTicketId": "2800",
-        "csvLocation": "D:/Exenta/EDI/MT/Inbound"
+        "csvLocation": "D:/Exenta/EDI/MT/Inbound/"
       },
       {
         "name": "Division-LCR",
@@ -75,7 +75,7 @@
         "token": "4bd4c51e72757fa3dc41f72b1eb7487f",
         "filenamePrefix": "AIMS940",
         "dayZeroPickTicketId": "14330",
-        "csvLocation": "D:/Exenta/EDI/MT/Inbound"
+        "csvLocation": "D:/Exenta/EDI/MT/Inbound/"
       }
     ]
   }
