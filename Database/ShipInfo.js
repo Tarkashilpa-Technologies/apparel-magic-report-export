@@ -18,6 +18,7 @@ const ShipInfo = new Schema(
     flat_rate: { type: String, default: "" },
     tracking_url: { type: String, default: "" },
     errors: { type: String, default: "" },
+    instanceName: { type: String, default: "" },
   },
   { timestamps: false }
 );
