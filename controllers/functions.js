@@ -231,21 +231,22 @@ const optimisePickTicketItem = (pickTicketItemData) => {
         }
       } else {
         eligiableForPack = false;
+        maxPack = 0;
       }
       //update orderQuantity by pack value
       styleColorNameValue.packDetails.orderQuantity = maxPack;
-      if (eligiableForPack) {
-        for (let [index, size] of packSize?.entries()) {
-          if (styleColorNameValue.hasOwnProperty(size)) styleColorNameValue[size]["orderQuantity"] = parseFloat(styleColorNameValue[size]["totalQuantity"]) - parseFloat(packRatio[index]) * maxPack;
-        }
-      }
       styleColorNameValue.eligiableForPack = eligiableForPack;
       styleColorNameValue.maxPackPossible = maxPack;
+    }
+    if (eligiableForPack) {
+      for (let [index, size] of packSize?.entries()) {
+        if (styleColorNameValue.hasOwnProperty(size)) styleColorNameValue[size]["orderQuantity"] = parseFloat(styleColorNameValue[size]["totalQuantity"]) - parseFloat(packRatio[index]) * maxPack;
+      }
     }
     // processed data for reporting
     for (let [orderType, orderTypeValue] of Object.entries(styleColorNameValue)) {
       if (parseFloat(orderTypeValue?.orderQuantity) > 0) {
-        console.debug("orderType", orderType, parseFloat(orderTypeValue?.orderQuantity));
+        console.debug("orderType", orderTypeValue?.Style, orderType, parseFloat(orderTypeValue?.orderQuantity));
         processedPickItems.push({
           CompanyDivisionCode: orderTypeValue?.Division,
           CompanyDivisionDescription: orderTypeValue?.Division,
@@ -353,7 +354,7 @@ const createRecordOnArray = async (request) => {
       if (pickTicket.ship_via && !isNaN(pickTicket.ship_via)) {
         // console.log(`Fetching shipping info for ship via ${pickTicket.ship_via}`);
         const shipInfo = await getShipInfo(pickTicket.ship_via, instanceElement);
-        // console.log(`Fetched shipinfo as: ${shipInfo}`);
+        console.log(`Fetched shipinfo as: ${shipInfo}`);
         pickTicket.ExentaShipViaCode = shipInfo;
       }
 
