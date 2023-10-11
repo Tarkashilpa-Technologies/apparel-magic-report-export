@@ -193,7 +193,7 @@ const getWareHouseData = async (pickTicketData) => {
       pickTicketItemData[processUpcKey][upcDataDB[0]?.Size]["orderQuantity"] = quantity.toString();
     } else {
       emailData.push("UPC code: " + item?.upc + " not avaialble for pick ticket: " + pickTicketData.pick_ticket_id);
-      winston.info(`UPC code: , ${item?.upc}, not avaialble for pick ticket: , pickTicketData.pick_ticket_id`);
+      winston.info(`UPC code: , ${item?.upc}, not avaialble for pick ticket: , ${pickTicketData.pick_ticket_id}`);
       console.log("UPC code: ", item?.upc, " not avaialble for pick ticket: ", pickTicketData.pick_ticket_id);
     }
   }
