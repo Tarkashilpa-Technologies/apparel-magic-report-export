@@ -137,7 +137,7 @@ module.exports = {
           BillTo_State: record?.customerData?.state,
           BillTo_Zip: record?.customerData?.postal_code?.padStart(5, "0"),
           MarkFor_Email: "",
-          MarkFor_MarkForCode: record?.ship_to_id,
+          MarkFor_MarkForCode: `${processedPickItemsValue?.CompanyDivisionCode}${record?.ship_to_id}`,
           MarkFor_Name: record?.customerData?.first_name == null ? record?.customerData?.customer_name : record?.customerData?.first_name,
           MarkFor_PhoneNumber1: record?.phone,
           MarkFor_Address1: record?.address_1,
